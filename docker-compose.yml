@@ -1,0 +1,59 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: shop_db
+      POSTGRES_USER: shop_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - shop_net
+
+  backend:
+    build: ./backend
+    restart: always
+    environment:
+      PORT: 3000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: shop_user
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: shop_db
+      JWT_SECRET: ${JWT_SECRET}
+      LOG_LEVEL: info
+    depends_on:
+      - postgres
+    networks:
+      - shop_net
+
+  frontend:
+    build: ./frontend
+    restart: always
+    depends_on:
+      - backend
+    networks:
+      - shop_net
+
+  nginx:
+    image: nginx:alpine
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - shop_net
+
+networks:
+  shop_net:
+
+volumes:
+  pg_data:
