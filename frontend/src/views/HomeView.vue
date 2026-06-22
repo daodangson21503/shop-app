@@ -38,7 +38,7 @@ const productStore = useProductStore();
 const categoryStore = useCategoryStore();
 
 function productsByCategory(categoryId) {
-  return productStore.products.filter((p) => p.category_id === categoryId);
+  return productStore.products.filter((p) => p.categoryId === categoryId);
 }
 
 onMounted(() => {

@@ -1,59 +1,68 @@
-const pool = require('../../config/db');
+const prisma = require('../../config/db');
 
 async function list({ search, category, page = 1, limit = 12 }) {
-  const offset = (page - 1) * limit;
-  const conditions = ['is_active = true'];
-  const values = [];
+  const take = Number(limit);
+  const skip = (Number(page) - 1) * take;
 
-  if (search) {
-    values.push(`%${search}%`);
-    conditions.push(`name ILIKE $${values.length}`);
-  }
-  if (category) {
-    values.push(category);
-    conditions.push(`category_id = $${values.length}`);
-  }
+  const where = {
+    isActive: true,
+    ...(search && { name: { contains: search, mode: 'insensitive' } }),
+    ...(category && { categoryId: Number(category) }),
+  };
 
-  const where = conditions.join(' AND ');
-  values.push(limit, offset);
-
-  const { rows } = await pool.query(
-    `SELECT * FROM products WHERE ${where}
-     ORDER BY created_at DESC LIMIT $${values.length - 1} OFFSET $${values.length}`,
-    values
-  );
-  return rows;
+  return prisma.product.findMany({
+    where,
+    orderBy: { createdAt: 'desc' },
+    take,
+    skip,
+  });
 }
 
 async function getBySlug(slug) {
-  const { rows } = await pool.query('SELECT * FROM products WHERE slug=$1', [slug]);
-  if (!rows[0]) throw { status: 404, message: 'Product not found' };
-  return rows[0];
+  const product = await prisma.product.findUnique({ where: { slug } });
+  if (!product) throw { status: 404, message: 'Product not found' };
+  return product;
 }
 
 async function create(data) {
   const { name, slug, description, price, stock, image_url, category_id } = data;
-  const { rows } = await pool.query(
-    `INSERT INTO products (name, slug, description, price, stock, image_url, category_id)
-     VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
-    [name, slug, description, price, stock, image_url, category_id]
-  );
-  return rows[0];
+  return prisma.product.create({
+    data: {
+      name,
+      slug,
+      description,
+      price,
+      stock,
+      imageUrl: image_url,
+      categoryId: category_id ? Number(category_id) : null,
+    },
+  });
 }
 
 async function update(id, data) {
   const { name, description, price, stock, image_url, category_id } = data;
-  const { rows } = await pool.query(
-    `UPDATE products SET name=$1, description=$2, price=$3, stock=$4,
-     image_url=$5, category_id=$6, updated_at=now() WHERE id=$7 RETURNING *`,
-    [name, description, price, stock, image_url, category_id, id]
-  );
-  if (!rows[0]) throw { status: 404, message: 'Product not found' };
-  return rows[0];
+  try {
+    return await prisma.product.update({
+      where: { id: Number(id) },
+      data: {
+        name,
+        description,
+        price,
+        stock,
+        imageUrl: image_url,
+        categoryId: category_id ? Number(category_id) : null,
+      },
+    });
+  } catch {
+    throw { status: 404, message: 'Product not found' };
+  }
 }
 
 async function remove(id) {
-  await pool.query('UPDATE products SET is_active=false WHERE id=$1', [id]);
+  await prisma.product.update({
+    where: { id: Number(id) },
+    data: { isActive: false },
+  });
 }
 
 module.exports = { list, getBySlug, create, update, remove };

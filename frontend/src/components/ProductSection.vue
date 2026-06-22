@@ -8,7 +8,7 @@
       <a-col :span="6" v-for="p in products" :key="p.id">
         <a-card hoverable class="product-card" @click="$router.push(`/products/${p.slug}`)">
           <template #cover>
-            <img :src="p.image_url" :alt="p.name" class="product-img" />
+            <img :src="p.imageUrl" :alt="p.name" class="product-img" />
           </template>
           <div class="product-name">{{ p.name }}</div>
           <div class="product-rating">★★★★★ <span class="review-count">({{ p.review_count || 0 }} đánh giá)</span></div>

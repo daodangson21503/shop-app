@@ -1,4 +1,4 @@
-const pool = require('../../config/db');
+const prisma = require('../../config/db');
 
 async function create(data) {
   const { customer_name, customer_phone, customer_address, items, user_id } = data;
@@ -7,20 +7,14 @@ async function create(data) {
     throw { status: 400, message: 'Giỏ hàng trống' };
   }
 
-  const client = await pool.connect();
-  try {
-    await client.query('BEGIN');
-
-    // Tính tổng tiền + verify giá thật từ DB (không tin giá frontend gửi lên)
+  return prisma.$transaction(async (tx) => {
     let totalAmount = 0;
     const verifiedItems = [];
 
     for (const item of items) {
-      const { rows } = await client.query(
-        'SELECT id, name, price, stock FROM products WHERE id=$1 AND is_active=true',
-        [item.product_id]
-      );
-      const product = rows[0];
+      const product = await tx.product.findFirst({
+        where: { id: Number(item.product_id), isActive: true },
+      });
       if (!product) throw { status: 404, message: `Sản phẩm id=${item.product_id} không tồn tại` };
       if (product.stock < item.quantity) {
         throw { status: 400, message: `Sản phẩm "${product.name}" không đủ hàng trong kho` };
@@ -30,69 +24,56 @@ async function create(data) {
       totalAmount += subtotal;
 
       verifiedItems.push({
-        product_id: product.id,
-        product_name: product.name,
+        productId: product.id,
+        productName: product.name,
         quantity: item.quantity,
-        unit_price: product.price,
+        unitPrice: product.price,
         subtotal,
       });
     }
 
-    // Tạo order
-    const orderResult = await client.query(
-      `INSERT INTO orders (user_id, customer_name, customer_phone, customer_address, total_amount)
-       VALUES ($1,$2,$3,$4,$5) RETURNING *`,
-      [user_id || null, customer_name, customer_phone, customer_address, totalAmount]
-    );
-    const order = orderResult.rows[0];
+    const order = await tx.order.create({
+      data: {
+        userId: user_id || null,
+        customerName: customer_name,
+        customerPhone: customer_phone,
+        customerAddress: customer_address,
+        totalAmount,
+        items: { create: verifiedItems },
+      },
+      include: { items: true },
+    });
 
-    // Tạo order_items + giảm stock
     for (const item of verifiedItems) {
-      await client.query(
-        `INSERT INTO order_items (order_id, product_id, product_name, quantity, unit_price, subtotal)
-         VALUES ($1,$2,$3,$4,$5,$6)`,
-        [order.id, item.product_id, item.product_name, item.quantity, item.unit_price, item.subtotal]
-      );
-      await client.query(
-        'UPDATE products SET stock = stock - $1 WHERE id=$2',
-        [item.quantity, item.product_id]
-      );
+      await tx.product.update({
+        where: { id: item.productId },
+        data: { stock: { decrement: item.quantity } },
+      });
     }
 
-    await client.query('COMMIT');
-    return { ...order, items: verifiedItems };
-  } catch (err) {
-    await client.query('ROLLBACK');
-    throw err;
-  } finally {
-    client.release();
-  }
+    return order;
+  });
 }
 
 async function listAll() {
-  const { rows } = await pool.query('SELECT * FROM orders ORDER BY created_at DESC');
-  return rows;
+  return prisma.order.findMany({ orderBy: { createdAt: 'desc' } });
 }
 
 async function getById(id) {
-  const { rows } = await pool.query('SELECT * FROM orders WHERE id=$1', [id]);
-  if (!rows[0]) throw { status: 404, message: 'Order not found' };
-
-  const items = await pool.query('SELECT * FROM order_items WHERE order_id=$1', [id]);
-  return { ...rows[0], items: items.rows };
+  const order = await prisma.order.findUnique({
+    where: { id },
+    include: { items: true },
+  });
+  if (!order) throw { status: 404, message: 'Order not found' };
+  return order;
 }
 
 async function updateStatus(id, status) {
-  const validStatuses = ['pending', 'confirmed', 'shipping', 'completed', 'cancelled'];
-  if (!validStatuses.includes(status)) {
-    throw { status: 400, message: 'Trạng thái không hợp lệ' };
+  try {
+    return await prisma.order.update({ where: { id }, data: { status } });
+  } catch {
+    throw { status: 404, message: 'Order not found' };
   }
-  const { rows } = await pool.query(
-    'UPDATE orders SET status=$1, updated_at=now() WHERE id=$2 RETURNING *',
-    [status, id]
-  );
-  if (!rows[0]) throw { status: 404, message: 'Order not found' };
-  return rows[0];
 }
 
 module.exports = { create, listAll, getById, updateStatus };

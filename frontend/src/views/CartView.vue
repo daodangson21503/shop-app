@@ -12,7 +12,7 @@
           <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'product'">
               <div class="product-cell">
-                <img :src="record.image_url" class="cell-img" />
+               <img :src="record.imageUrl" class="cell-img" />
                 <span>{{ record.name }}</span>
               </div>
             </template>
