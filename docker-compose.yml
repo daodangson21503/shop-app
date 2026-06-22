@@ -52,6 +52,59 @@ services:
     networks:
       - shop_net
 
+  node-exporter:
+    image: prom/node-exporter:latest
+    restart: always
+    networks:
+      - shop_net
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    restart: always
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    networks:
+      - shop_net
+
+  prometheus:
+    image: prom/prometheus:latest
+    restart: always
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - shop_net
+
+  loki:
+    image: grafana/loki:latest
+    restart: always
+    networks:
+      - shop_net
+
+  promtail:
+    image: grafana/promtail:latest
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./monitoring/promtail.yml:/etc/promtail/config.yml
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - shop_net
+
+  grafana:
+    image: grafana/grafana:latest
+    restart: always
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+    networks:
+      - shop_net
+
 networks:
   shop_net:
 
