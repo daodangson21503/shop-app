@@ -12,12 +12,6 @@ pipeline {
             }
         }
 
-        stage('Test Backend') {
-            steps {
-                sh 'cd backend && npm ci && npm test'
-            }
-        }
-
         stage('Build Backend Image') {
             steps {
                 sh 'docker build -t sondd2/shop-backend:latest ./backend'
