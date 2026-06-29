@@ -2,7 +2,18 @@
   <div class="sidebar">
     <div class="sidebar-title">Danh mục sản phẩm</div>
     <ul class="category-list">
-      <li v-for="cat in categories" :key="cat.id" @click="$router.push(`/products?category=${cat.id}`)">
+      <li
+        :class="{ active: selectedCategory === null }"
+        @click="selectCategory(null)"
+      >
+        Tất cả sản phẩm
+      </li>
+      <li
+        v-for="cat in categories"
+        :key="cat.id"
+        :class="{ active: selectedCategory === cat.id }"
+        @click="selectCategory(cat.id)"
+      >
         {{ cat.name }}
       </li>
     </ul>
@@ -10,9 +21,17 @@
 </template>
 
 <script setup>
-defineProps({
-  categories: Array,
-});
+import { useProductStore } from '../stores/product.store';
+import { storeToRefs } from 'pinia';
+
+defineProps({ categories: Array });
+
+const productStore = useProductStore();
+const { selectedCategory } = storeToRefs(productStore);
+
+function selectCategory(id) {
+  productStore.setCategory(id);
+}
 </script>
 
 <style scoped>
@@ -42,5 +61,11 @@ defineProps({
 .category-list li:hover {
   background: #fff1f0;
   color: #ff424e;
+}
+.category-list li.active {
+  background: #fff1f0;
+  color: #ff424e;
+  font-weight: 600;
+  border-left: 3px solid #ff424e;
 }
 </style>

@@ -3,7 +3,7 @@
     <AppHeader />
 
     <div class="banner">
-      <img src="https://placehold.co/1200x300?text=Banner+Khuyen+Mai" alt="banner" />
+      <img src="../assets/banner.jpg" alt="banner" />
     </div>
 
     <div class="main-content">
@@ -11,14 +11,42 @@
         <CategorySidebar :categories="categoryStore.categories" />
       </div>
 
-      <div class="content-col">
-        <ProductSection
-          v-for="cat in categoryStore.categories"
-          :key="cat.id"
-          :title="cat.name"
-          :products="productsByCategory(cat.id)"
-        />
-      </div>
+     <div class="content-col">
+  <!-- Đang tìm kiếm -->
+  <template v-if="productStore.keyword">
+    <div class="search-result-title">
+      Kết quả tìm kiếm: "<strong>{{ productStore.keyword }}</strong>"
+      ({{ productStore.filteredProducts.length }} sản phẩm)
+    </div>
+    <a-empty
+      v-if="productStore.filteredProducts.length === 0"
+      description="Không tìm thấy sản phẩm nào"
+    />
+    <ProductSection
+      v-else
+      title=""
+      :products="productStore.filteredProducts"
+    />
+  </template>
+
+  <!-- Đang lọc theo danh mục -->
+  <template v-else-if="productStore.selectedCategory">
+    <ProductSection
+      :title="selectedCategoryName"
+      :products="productStore.filteredProducts"
+    />
+  </template>
+
+  <!-- Tất cả sản phẩm theo danh mục -->
+  <template v-else>
+    <ProductSection
+      v-for="cat in categoryStore.categories"
+      :key="cat.id"
+      :title="cat.name"
+      :products="productsByCategory(cat.id)"
+    />
+  </template>
+</div>
     </div>
 
     <AppFooter />
@@ -41,8 +69,15 @@ function productsByCategory(categoryId) {
   return productStore.products.filter((p) => p.categoryId === categoryId);
 }
 
+const selectedCategoryName = computed(() => {
+  const cat = categoryStore.categories.find(
+    (c) => c.id === productStore.selectedCategory
+  );
+  return cat ? cat.name : '';
+});
+
 onMounted(() => {
-  productStore.fetchProducts({ limit: 100 }); // lấy nhiều hơn để đủ chia theo category
+  productStore.fetchProducts();
   categoryStore.fetchCategories();
 });
 </script>
@@ -65,5 +100,12 @@ onMounted(() => {
 }
 .content-col {
   flex: 1;
+}
+.search-result-title {
+  font-size: 16px;
+  margin-bottom: 16px;
+  color: #333;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #ff424e;
 }
 </style>

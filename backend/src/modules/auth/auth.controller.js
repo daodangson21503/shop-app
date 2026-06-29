@@ -8,4 +8,12 @@ async function login(req, res, next) {
   } catch (err) { next(err); }
 }
 
-module.exports = { login };
+async function register(req, res, next) {
+  try {
+    const { fullName, email, password } = req.body;
+    const data = await authService.register(fullName, email, password);
+    res.status(201).json({ success: true, data });
+  } catch (err) { next(err); }
+}
+
+module.exports = { login, register };

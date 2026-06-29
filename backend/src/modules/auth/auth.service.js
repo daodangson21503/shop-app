@@ -17,4 +17,15 @@ async function login(email, password) {
   return { token, user: { id: user.id, full_name: user.fullName, role: user.role } };
 }
 
-module.exports = { login };
+async function register(fullName, email, password) {
+  const existing = await prisma.user.findUnique({ where: { email } });
+  if (existing) throw { status: 400, message: 'Email đã được sử dụng' };
+
+  const passwordHash = await bcrypt.hash(password, 10);
+  const user = await prisma.user.create({
+    data: { fullName, email, passwordHash, role: 'customer' },
+  });
+  return { id: user.id, email: user.email, fullName: user.fullName };
+}
+
+module.exports = { login, register };

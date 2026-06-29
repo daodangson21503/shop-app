@@ -28,4 +28,11 @@ async function updateStatus(req, res, next) {
   } catch (err) { next(err); }
 }
 
-module.exports = { create, listAll, getById, updateStatus };
+async function getMyOrders(req, res, next) {
+  try {
+    const data = await service.getByUserId(req.user.id);
+    res.json({ success: true, data });
+  } catch (err) { next(err); }
+}
+
+module.exports = { create, listAll, getById, updateStatus, getMyOrders };

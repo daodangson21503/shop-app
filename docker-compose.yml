@@ -25,6 +25,9 @@ services:
       DB_NAME: shop_db
       JWT_SECRET: ${JWT_SECRET}
       LOG_LEVEL: info
+      DATABASE_URL: "postgresql://shop_user:${DB_PASSWORD}@postgres:5432/shop_db?schema=public"
+    volumes:
+      - uploads_data:/app/uploads
     depends_on:
       - postgres
     networks:
@@ -48,6 +51,9 @@ services:
     depends_on:
       - frontend
       - backend
+      - grafana
+      - prometheus
+      - jenkins
     networks:
       - shop_net
 
@@ -104,8 +110,24 @@ services:
     networks:
       - shop_net
 
+  jenkins:
+    image: jenkins-docker
+    restart: always
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - TZ=Asia/Ho_Chi_Minh
+    networks:
+      - shop_net
+
 networks:
   shop_net:
 
 volumes:
   pg_data:
+  uploads_data:
+  jenkins_home:

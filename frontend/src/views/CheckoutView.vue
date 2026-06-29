@@ -56,17 +56,27 @@ import { useRouter } from 'vue-router';
 import { message } from 'ant-design-vue';
 import AppHeader from '../components/AppHeader.vue';
 import AppFooter from '../components/AppFooter.vue';
+import { onMounted } from 'vue';
 import { useCartStore } from '../stores/cart.store';
+import { useAuthStore } from '../stores/auth.store';
 import http from '../api/axios';
 
 const cart = useCartStore();
 const router = useRouter();
 const submitting = ref(false);
+const auth = useAuthStore();
 
 const form = ref({
   customer_name: '',
   customer_phone: '',
   customer_address: '',
+});
+
+onMounted(() => {
+  if (!auth.isLoggedIn) {
+    message.warning('Vui lòng đăng nhập để đặt hàng');
+    router.push('/login');
+  }
 });
 
 async function submitOrder() {
@@ -83,13 +93,14 @@ async function submitOrder() {
   try {
     const payload = {
       ...form.value,
+      user_id: auth.user?.id || null, 
       items: cart.items.map((i) => ({ product_id: i.id, quantity: i.quantity })),
     };
     const { data } = await http.post('/orders', payload);
     message.success('Đặt hàng thành công!');
     cart.items = [];
     cart.persist();
-    router.push('/');
+    router.push('/my-orders');   
   } catch (err) {
     message.error(err.response?.data?.message || 'Đặt hàng thất bại');
   } finally {

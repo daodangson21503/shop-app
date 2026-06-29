@@ -8,17 +8,13 @@
     <a-table :dataSource="orders" :columns="columns" rowKey="id" :loading="loading">
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'total_amount'">
-          {{ Number(record.total_amount).toLocaleString() }}đ
+          {{ Number(record.totalAmount).toLocaleString() }}đ
         </template>
         <template v-else-if="column.key === 'created_at'">
-          {{ new Date(record.created_at).toLocaleString('vi-VN') }}
+          {{ new Date(record.createdAt).toLocaleString('vi-VN') }}
         </template>
         <template v-else-if="column.key === 'status'">
-          <a-select
-            v-model:value="record.status"
-            style="width: 140px"
-            @change="(val) => changeStatus(record.id, val)"
-          >
+          <a-select v-model:value="record.status" style="width: 140px" @change="(val) => changeStatus(record.id, val)">
             <a-select-option value="pending">Chờ xử lý</a-select-option>
             <a-select-option value="confirmed">Đã xác nhận</a-select-option>
             <a-select-option value="shipping">Đang giao</a-select-option>
@@ -63,8 +59,8 @@ const detailVisible = ref(false);
 const selectedOrder = ref(null);
 
 const columns = [
-  { title: 'Khách hàng', dataIndex: 'customer_name' },
-  { title: 'SĐT', dataIndex: 'customer_phone' },
+  { title: 'Khách hàng', dataIndex: 'customerName' },
+  { title: 'SĐT', dataIndex: 'customerPhone' },
   { title: 'Tổng tiền', key: 'total_amount' },
   { title: 'Ngày đặt', key: 'created_at' },
   { title: 'Trạng thái', key: 'status' },
@@ -106,17 +102,20 @@ onMounted(fetchOrders);
   margin: 32px auto;
   padding: 0 16px;
 }
+
 .admin-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
 }
+
 .item-row {
   display: flex;
   justify-content: space-between;
   margin-bottom: 8px;
 }
+
 .item-row.total {
   font-weight: 700;
   font-size: 16px;

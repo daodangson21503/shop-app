@@ -44,8 +44,22 @@
                 <a-form-item label="Tồn kho">
                     <a-input-number v-model:value="form.stock" style="width: 100%" :min="0" />
                 </a-form-item>
-                <a-form-item label="Link ảnh">
-                    <a-input v-model:value="form.image_url" />
+                <a-form-item label="Ảnh sản phẩm">
+                    <div class="image-upload-area">
+                        <!-- Preview ảnh hiện tại -->
+                        <div v-if="form.image_url" class="image-preview">
+                            <img :src="form.image_url" alt="preview" />
+                            <a-button size="small" danger @click="form.image_url = ''">Xóa ảnh</a-button>
+                        </div>
+
+                        <!-- Nút chọn file -->
+                        <input ref="fileInput" type="file" accept="image/jpeg,image/png,image/webp" style="display:none"
+                            @change="handleFileSelect" />
+                        <a-button @click="$refs.fileInput.click()" :loading="uploadingImage">
+                            {{ form.image_url ? 'Đổi ảnh' : 'Chọn ảnh' }}
+                        </a-button>
+                        <span v-if="uploadingImage" style="margin-left:8px; color:#888">Đang upload...</span>
+                    </div>
                 </a-form-item>
                 <a-form-item label="Category ID">
                     <a-input-number v-model:value="form.category_id" style="width: 100%" />
@@ -69,6 +83,8 @@ const products = ref([]);
 const loading = ref(false);
 const modalVisible = ref(false);
 const editingId = ref(null);
+const uploadingImage = ref(false);
+const fileInput = ref(null);
 
 const form = ref({
     name: '', slug: '', description: '', price: 0, stock: 0, image_url: '', category_id: null,
@@ -116,6 +132,30 @@ async function submit() {
     }
 }
 
+async function handleFileSelect(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    uploadingImage.value = true;
+    try {
+        const formData = new FormData();
+        formData.append('image', file);
+
+        const { data } = await http.post('/upload/image', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        });
+
+        form.value.image_url = data.data.url;
+        message.success('Upload ảnh thành công');
+    } catch (err) {
+        message.error('Upload ảnh thất bại');
+    } finally {
+        uploadingImage.value = false;
+        // Reset input để có thể chọn lại cùng file
+        if (fileInput.value) fileInput.value.value = '';
+    }
+}
+
 function remove(id) {
     Modal.confirm({
         title: 'Xác nhận xóa sản phẩm này?',
@@ -147,5 +187,26 @@ onMounted(fetchProducts);
     justify-content: space-between;
     align-items: center;
     margin-bottom: 24px;
+}
+
+.image-upload-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.image-preview {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.image-preview img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #eee;
 }
 </style>

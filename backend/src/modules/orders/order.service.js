@@ -76,4 +76,12 @@ async function updateStatus(id, status) {
   }
 }
 
-module.exports = { create, listAll, getById, updateStatus };
+async function getByUserId(userId) {
+  return prisma.order.findMany({
+    where: { userId },
+    orderBy: { createdAt: 'desc' },
+    include: { items: true },
+  });
+}
+
+module.exports = { create, listAll, getById, updateStatus, getByUserId };

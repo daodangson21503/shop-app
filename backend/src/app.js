@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');  
 const promClient = require('prom-client');
 const errorHandler = require('./middlewares/error.middleware');
 const routes = require('./routes/index');
@@ -7,6 +8,7 @@ const routes = require('./routes/index');
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // --- Prometheus metrics ---
 promClient.collectDefaultMetrics();
