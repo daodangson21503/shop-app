@@ -1,28 +1,45 @@
 <template>
-  <div>
-    <AppHeader />
-    <div class="register-wrapper">
-      <a-card title="Đăng ký tài khoản" style="width: 400px">
+  <div class="auth-page">
+    <div class="auth-left">
+      <div class="auth-brand">
+        <div class="brand-icon">🏠</div>
+        <h1>ShopGiaDung</h1>
+        <p>Đồ gia dụng chính hãng, giá tốt mỗi ngày</p>
+      </div>
+    </div>
+
+    <div class="auth-right">
+      <div class="auth-card">
+        <h2>Tạo tài khoản</h2>
+        <p class="auth-subtitle">Đăng ký để theo dõi đơn hàng dễ dàng hơn</p>
+
         <a-form layout="vertical">
           <a-form-item label="Họ và tên">
-            <a-input v-model:value="form.fullName" placeholder="Nguyễn Văn A" />
+            <a-input v-model:value="form.fullName" size="large" placeholder="Nguyễn Văn A" />
           </a-form-item>
           <a-form-item label="Email">
-            <a-input v-model:value="form.email" placeholder="email@example.com" />
+            <a-input v-model:value="form.email" size="large" placeholder="email@example.com" />
           </a-form-item>
           <a-form-item label="Mật khẩu">
-            <a-input-password v-model:value="form.password" />
+            <a-input-password v-model:value="form.password" size="large" placeholder="Tối thiểu 6 ký tự" />
           </a-form-item>
-          <a-button type="primary" block :loading="loading" @click="onRegister">
+          <a-button
+            type="primary"
+            size="large"
+            block
+            :loading="loading"
+            @click="onRegister"
+            class="submit-btn"
+          >
             Đăng ký
           </a-button>
-          <div style="text-align:center; margin-top:12px">
-            Đã có tài khoản? <a @click="$router.push('/login')">Đăng nhập</a>
-          </div>
         </a-form>
-      </a-card>
+
+        <div class="auth-footer">
+          Đã có tài khoản? <a @click="$router.push('/login')">Đăng nhập</a>
+        </div>
+      </div>
     </div>
-    <AppFooter />
   </div>
 </template>
 
@@ -30,8 +47,6 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { message } from 'ant-design-vue';
-import AppHeader from '../components/AppHeader.vue';
-import AppFooter from '../components/AppFooter.vue';
 import http from '../api/axios';
 
 const router = useRouter();
@@ -57,11 +72,41 @@ async function onRegister() {
 </script>
 
 <style scoped>
-.register-wrapper {
+.auth-page {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 60vh;
-  padding: 40px 16px;
+  min-height: 100vh;
 }
+.auth-left {
+  flex: 1;
+  background: linear-gradient(135deg, #ff424e 0%, #ff7a45 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+.auth-brand { text-align: center; padding: 40px; }
+.brand-icon { font-size: 64px; margin-bottom: 16px; }
+.auth-brand h1 { font-size: 36px; font-weight: 800; margin-bottom: 8px; color: #fff; }
+.auth-brand p { font-size: 16px; opacity: 0.9; }
+.auth-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fafafa;
+  padding: 24px;
+}
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  background: #fff;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+.auth-card h2 { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+.auth-subtitle { color: #888; margin-bottom: 24px; font-size: 14px; }
+.submit-btn { margin-top: 8px; height: 44px; font-weight: 600; border-radius: 8px; }
+.auth-footer { text-align: center; margin-top: 20px; font-size: 14px; color: #666; }
+@media (max-width: 768px) { .auth-left { display: none; } }
 </style>

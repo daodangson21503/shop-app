@@ -9,21 +9,24 @@
       <div class="header-actions">
         <!-- Nếu đã đăng nhập -->
         <template v-if="auth.isLoggedIn && !auth.isAdmin">
-          <a-button @click="$router.push('/my-orders')" style="margin-right: 8px">
+          <a-button @click="$router.push('/my-orders')" class="action-btn">
             📋 Đơn hàng
           </a-button>
-          <a-button @click="logout" style="margin-right: 8px">Đăng xuất</a-button>
+          <a-button @click="logout" class="action-btn">Đăng xuất</a-button>
         </template>
 
         <!-- Nếu chưa đăng nhập -->
         <template v-else-if="!auth.isLoggedIn">
-          <a-button @click="$router.push('/login')" style="margin-right: 8px">
+          <a-button @click="$router.push('/login')" class="action-btn">
             Đăng nhập
           </a-button>
         </template>
-
+        
+        <a-button v-if="auth.isLoggedIn && !auth.isAdmin" @click="$router.push('/wishlist')" style="margin-right: 8px">
+          ❤️ Yêu thích
+        </a-button>
         <a-badge :count="cart.count">
-          <a-button @click="$router.push('/cart')">🛒 Giỏ hàng</a-button>
+          <a-button class="cart-btn" @click="$router.push('/cart')">🛒 Giỏ hàng</a-button>
         </a-badge>
       </div>
     </div>
@@ -46,7 +49,7 @@ const auth = useAuthStore();
 function onSearch() {
   productStore.setCategory(null);
   productStore.setKeyword(keyword.value);
-  router.push('/');
+  router.push({ path: '/products', query: { search: keyword.value } });
 }
 
 function goHome() {
@@ -66,35 +69,63 @@ function logout() {
 <style scoped>
 .header {
   background: #fff;
-  border-bottom: 1px solid #eee;
-  padding: 12px 24px;
+  padding: 14px 24px;
   position: sticky;
   top: 0;
   z-index: 100;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
 .header-top {
   display: flex;
   align-items: center;
   gap: 24px;
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
 }
 
 .logo {
-  font-size: 20px;
-  font-weight: 700;
-  color: #ff424e;
+  font-size: 21px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #ff424e, #ff7a45);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   cursor: pointer;
   white-space: nowrap;
+  transition: opacity 0.2s;
+}
+
+.logo:hover {
+  opacity: 0.85;
 }
 
 .search-box {
   flex: 1;
-  max-width: 500px;
+  max-width: 520px;
+}
+
+.search-box :deep(.ant-input-search-button) {
+  background: #ff424e;
+  border-color: #ff424e;
 }
 
 .header-actions {
   margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.action-btn {
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.cart-btn {
+  border-radius: 8px;
+  font-weight: 500;
+  background: #fff1f0;
+  border-color: #ffccc7;
+  color: #ff424e;
 }
 </style>

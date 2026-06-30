@@ -11,6 +11,9 @@ import AdminOrdersView from '../views/admin/AdminOrdersView.vue';
 import LoginView from '../views/LoginView.vue';
 import MyOrdersView from '../views/MyOrdersView.vue';
 import RegisterView from '../views/RegisterView.vue';
+import AdminCategoriesView from '../views/admin/AdminCategoriesView.vue';
+import AdminHomeView from '../views/admin/AdminHomeView.vue';
+import WishlistView from '../views/WishlistView.vue';
 
 const routes = [
   { path: '/', component: HomeView },
@@ -18,12 +21,15 @@ const routes = [
   { path: '/products/:slug', component: ProductDetailView },
   { path: '/cart', component: CartView },
   { path: '/checkout', component: CheckoutView },
-  { path: '/login', component: LoginView },                             
+  { path: '/login', component: LoginView },
   { path: '/register', component: RegisterView },
-  { path: '/my-orders', component: MyOrdersView }, 
+  { path: '/my-orders', component: MyOrdersView },
   { path: '/admin/login', component: AdminLoginView },
-  { path: '/admin', component: AdminDashboard, meta: { requiresAdmin: true } },
+  { path: '/admin', component: AdminHomeView, meta: { requiresAdmin: true } },
+  { path: '/admin/products', component: AdminDashboard, meta: { requiresAdmin: true } },
   { path: '/admin/orders', component: AdminOrdersView, meta: { requiresAdmin: true } },
+  { path: '/admin/categories', component: AdminCategoriesView, meta: { requiresAdmin: true } },
+  { path: '/wishlist', component: WishlistView },
 ];
 
 const router = createRouter({

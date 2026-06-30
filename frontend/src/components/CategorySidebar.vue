@@ -1,20 +1,22 @@
 <template>
   <div class="sidebar">
-    <div class="sidebar-title">Danh mục sản phẩm</div>
+    <div class="sidebar-title">
+      <span class="title-icon">📂</span> Danh mục sản phẩm
+    </div>
     <ul class="category-list">
       <li
         :class="{ active: selectedCategory === null }"
         @click="selectCategory(null)"
       >
-        Tất cả sản phẩm
+        <span class="cat-dot"></span> Tất cả sản phẩm
       </li>
       <li
         v-for="cat in categories"
         :key="cat.id"
         :class="{ active: selectedCategory === cat.id }"
-        @click="selectCategory(cat.id)"
+        @click="$router.push(`/products?category=${cat.id}`)"
       >
-        {{ cat.name }}
+        <span class="cat-dot"></span> {{ cat.name }}
       </li>
     </ul>
   </div>
@@ -37,35 +39,59 @@ function selectCategory(id) {
 <style scoped>
 .sidebar {
   background: #fff;
-  border-radius: 8px;
-  border: 1px solid #eee;
+  border-radius: 14px;
+  border: 1px solid #f0f0f0;
   overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
 }
 .sidebar-title {
-  background: #ff424e;
+  background: linear-gradient(135deg, #ff424e, #ff6b6b);
   color: #fff;
-  padding: 12px 16px;
-  font-weight: 600;
+  padding: 16px 18px;
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 .category-list {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 8px;
 }
 .category-list li {
-  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
   cursor: pointer;
-  border-bottom: 1px solid #f5f5f5;
+  border-radius: 8px;
   font-size: 14px;
+  color: #444;
+  transition: all 0.15s;
+  margin-bottom: 2px;
+}
+.cat-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ddd;
+  flex-shrink: 0;
+  transition: background 0.15s;
 }
 .category-list li:hover {
-  background: #fff1f0;
+  background: #fff5f5;
   color: #ff424e;
+}
+.category-list li:hover .cat-dot {
+  background: #ff424e;
 }
 .category-list li.active {
   background: #fff1f0;
   color: #ff424e;
   font-weight: 600;
-  border-left: 3px solid #ff424e;
+}
+.category-list li.active .cat-dot {
+  background: #ff424e;
 }
 </style>

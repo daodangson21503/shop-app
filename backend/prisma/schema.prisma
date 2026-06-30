@@ -36,6 +36,7 @@ model User {
   updatedAt    DateTime @updatedAt @map("updated_at")
 
   orders Order[]
+   wishlists Wishlist[]
 
   @@map("users")
 }
@@ -66,7 +67,7 @@ model Product {
 
   category   Category?   @relation(fields: [categoryId], references: [id])
   orderItems OrderItem[]
-
+  wishlists  Wishlist[]
   @@index([categoryId])
   @@index([isActive])
   @@map("products")
@@ -105,4 +106,17 @@ model OrderItem {
 
   @@index([orderId])
   @@map("order_items")
+}
+
+model Wishlist {
+  id        Int      @id @default(autoincrement())
+  userId    String   @map("user_id")
+  productId Int      @map("product_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@map("wishlists")
 }

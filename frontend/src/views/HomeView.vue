@@ -11,42 +11,28 @@
         <CategorySidebar :categories="categoryStore.categories" />
       </div>
 
-     <div class="content-col">
-  <!-- Đang tìm kiếm -->
-  <template v-if="productStore.keyword">
-    <div class="search-result-title">
-      Kết quả tìm kiếm: "<strong>{{ productStore.keyword }}</strong>"
-      ({{ productStore.filteredProducts.length }} sản phẩm)
-    </div>
-    <a-empty
-      v-if="productStore.filteredProducts.length === 0"
-      description="Không tìm thấy sản phẩm nào"
-    />
-    <ProductSection
-      v-else
-      title=""
-      :products="productStore.filteredProducts"
-    />
-  </template>
+      <div class="content-col">
+        <!-- Đang tìm kiếm -->
+        <template v-if="productStore.keyword">
+          <div class="search-result-title">
+            Kết quả tìm kiếm: "<strong>{{ productStore.keyword }}</strong>"
+            ({{ productStore.filteredProducts.length }} sản phẩm)
+          </div>
+          <a-empty v-if="productStore.filteredProducts.length === 0" description="Không tìm thấy sản phẩm nào" />
+          <ProductSection v-else title="" :products="productStore.filteredProducts" />
+        </template>
 
-  <!-- Đang lọc theo danh mục -->
-  <template v-else-if="productStore.selectedCategory">
-    <ProductSection
-      :title="selectedCategoryName"
-      :products="productStore.filteredProducts"
-    />
-  </template>
+        <!-- Đang lọc theo danh mục -->
+        <template v-else-if="productStore.selectedCategory">
+          <ProductSection :title="selectedCategoryName" :products="productStore.filteredProducts" />
+        </template>
 
-  <!-- Tất cả sản phẩm theo danh mục -->
-  <template v-else>
-    <ProductSection
-      v-for="cat in categoryStore.categories"
-      :key="cat.id"
-      :title="cat.name"
-      :products="productsByCategory(cat.id)"
-    />
-  </template>
-</div>
+        <!-- Tất cả sản phẩm theo danh mục -->
+        <template v-else>
+          <ProductSection v-for="cat in categoryStore.categories" :key="cat.id" :title="cat.name" :categoryId="cat.id"
+            :products="productsByCategory(cat.id)" />
+        </template>
+      </div>
     </div>
 
     <AppFooter />
@@ -87,6 +73,7 @@ onMounted(() => {
   width: 100%;
   display: block;
 }
+
 .main-content {
   max-width: 1200px;
   margin: 24px auto;
@@ -94,13 +81,16 @@ onMounted(() => {
   gap: 20px;
   padding: 0 16px;
 }
+
 .sidebar-col {
   width: 240px;
   flex-shrink: 0;
 }
+
 .content-col {
   flex: 1;
 }
+
 .search-result-title {
   font-size: 16px;
   margin-bottom: 16px;
