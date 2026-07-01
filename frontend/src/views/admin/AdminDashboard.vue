@@ -194,7 +194,7 @@ const lowStockProducts = computed(() =>
 function getFullImageUrl(url) {
   if (!url) return 'https://placehold.co/40x40/eee/999?text=?';
   if (url.startsWith('http')) return url;
-  return `http://localhost:3000${url}`; // ảnh upload local
+  return url; // ảnh upload local
 }
 
 // Auto slug từ tên

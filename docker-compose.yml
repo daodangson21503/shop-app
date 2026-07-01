@@ -27,7 +27,7 @@ services:
       LOG_LEVEL: info
       DATABASE_URL: "postgresql://shop_user:${DB_PASSWORD}@postgres:5432/shop_db?schema=public"
     volumes:
-      - uploads_data:/app/uploads
+      - uploads_data:/app/uploads 
     depends_on:
       - postgres
     networks:
