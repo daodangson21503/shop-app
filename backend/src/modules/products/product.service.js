@@ -10,18 +10,50 @@ async function list({ search, category, page = 1, limit = 12 }) {
     ...(category && { categoryId: Number(category) }),
   };
 
-  return prisma.product.findMany({
+  const products = await prisma.product.findMany({
     where,
     orderBy: { createdAt: 'desc' },
     take,
     skip,
+    include: {
+      _count: { select: { reviews: true } },
+      reviews: { select: { rating: true } },
+    },
+  });
+
+  return products.map((p) => {
+    const { reviews, _count, ...rest } = p;
+    const avgRating = reviews.length
+      ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+      : 0;
+    return {
+      ...rest,
+      avgRating: Number(avgRating.toFixed(1)),
+      reviewCount: _count.reviews,
+    };
   });
 }
 
 async function getBySlug(slug) {
-  const product = await prisma.product.findUnique({ where: { slug } });
+  const product = await prisma.product.findUnique({
+    where: { slug },
+    include: {
+      _count: { select: { reviews: true } },
+      reviews: { select: { rating: true } },
+    },
+  });
   if (!product) throw { status: 404, message: 'Product not found' };
-  return product;
+
+  const { reviews, _count, ...rest } = product;
+  const avgRating = reviews.length
+    ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+    : 0;
+
+  return {
+    ...rest,
+    avgRating: Number(avgRating.toFixed(1)),
+    reviewCount: _count.reviews,
+  };
 }
 
 async function create(data) {

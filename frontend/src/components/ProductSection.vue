@@ -6,30 +6,31 @@
         Xem thêm <span class="arrow">›</span>
       </a-button>
     </div>
-    <a-row :gutter="16">
-      <a-col :span="6" v-for="p in products" :key="p.id">
-        <a-card hoverable class="product-card" @click="$router.push(`/products/${p.slug}`)">
-          <template #cover>
-            <div class="img-wrap">
-              <img :src="p.imageUrl" :alt="p.name" class="product-img" />
-              <button
-                class="wishlist-btn"
-                :class="{ active: wishlist.isWishlisted(p.id) }"
-                @click.stop="toggleWishlist(p)"
-              >
-                {{ wishlist.isWishlisted(p.id) ? '❤️' : '🤍' }}
-              </button>
-            </div>
-          </template>
-          <div class="product-name">{{ p.name }}</div>
-          <div class="product-rating">
-            <span class="stars">★★★★★</span>
-            <span class="review-count">({{ p.review_count || 0 }} đánh giá)</span>
+
+    <div class="scroll-wrapper">
+      <div class="scroll-track">
+        <div class="product-card" v-for="p in products" :key="p.id" @click="$router.push(`/products/${p.slug}`)">
+          <div class="img-wrap">
+            <img :src="p.imageUrl" :alt="p.name" class="product-img" />
+            <button
+              class="wishlist-btn"
+              :class="{ active: wishlist.isWishlisted(p.id) }"
+              @click.stop="toggleWishlist(p)"
+            >
+              {{ wishlist.isWishlisted(p.id) ? '❤️' : '🤍' }}
+            </button>
           </div>
-          <div class="product-price">{{ Number(p.price).toLocaleString() }}đ</div>
-        </a-card>
-      </a-col>
-    </a-row>
+          <div class="card-body">
+            <div class="product-name">{{ p.name }}</div>
+            <div class="product-rating">
+              <span class="stars">{{ renderStars(p.avgRating) }}</span>
+              <span class="review-count">({{ p.reviewCount || 0 }})</span>
+            </div>
+            <div class="product-price">{{ Number(p.price).toLocaleString() }}đ</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -48,6 +49,11 @@ defineProps({
 const wishlist = useWishlistStore();
 const auth = useAuthStore();
 const router = useRouter();
+
+function renderStars(avg) {
+  const rounded = Math.round(avg || 0);
+  return '★'.repeat(rounded) + '☆'.repeat(5 - rounded);
+}
 
 async function toggleWishlist(product) {
   if (!auth.isLoggedIn) {
@@ -103,11 +109,37 @@ async function toggleWishlist(product) {
   margin-left: 2px;
 }
 
+.scroll-wrapper {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #ffccc7 transparent;
+  margin: 0 -4px;
+  padding: 4px;
+}
+
+.scroll-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+
+.scroll-wrapper::-webkit-scrollbar-thumb {
+  background: #ffccc7;
+  border-radius: 4px;
+}
+
+.scroll-track {
+  display: flex;
+  gap: 16px;
+}
+
 .product-card {
-  margin-bottom: 16px;
+  flex: 0 0 220px;
+  width: 220px;
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid #f0f0f0;
+  background: #fff;
+  cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
@@ -116,7 +148,7 @@ async function toggleWishlist(product) {
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.09);
 }
 
-.product-card :deep(.ant-card-body) {
+.card-body {
   padding: 12px;
 }
 

@@ -3,10 +3,11 @@
     <div class="admin-sidebar">
       <div class="sidebar-logo">🏠 ShopGiaDung</div>
       <nav class="sidebar-nav">
-       <a class="nav-item" @click="$router.push('/admin')">📊 Tổng quan</a>
-<a class="nav-item" @click="$router.push('/admin/products')">📦 Sản phẩm</a>
+        <a class="nav-item" @click="$router.push('/admin')">📊 Tổng quan</a>
+        <a class="nav-item" @click="$router.push('/admin/products')">📦 Sản phẩm</a>
         <a class="nav-item" @click="$router.push('/admin/categories')">🗂 Danh mục</a>
         <a class="nav-item" @click="$router.push('/admin/orders')">🧾 Đơn hàng</a>
+        <a class="nav-item" @click="$router.push('/admin/vouchers')">🎟 Voucher</a>
       </nav>
       <div class="sidebar-footer">
         <div class="admin-info">

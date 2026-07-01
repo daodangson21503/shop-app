@@ -63,9 +63,43 @@
 
             <a-divider style="margin: 12px 0" />
 
+            <!-- Voucher -->
+            <div class="voucher-box">
+              <div v-if="!appliedVoucher" class="voucher-input-row">
+                <a-input
+                  v-model:value="voucherCode"
+                  placeholder="Nhập mã giảm giá"
+                  @keyup.enter="applyVoucher"
+                  :disabled="checkingVoucher"
+                />
+                <a-button
+                  @click="applyVoucher"
+                  :loading="checkingVoucher"
+                >
+                  Áp dụng
+                </a-button>
+              </div>
+              <div v-else class="voucher-applied">
+                <div class="voucher-applied-info">
+                  <span class="voucher-tag">🎟 {{ appliedVoucher.code }}</span>
+                  <span class="voucher-applied-desc">{{ appliedVoucher.description }}</span>
+                </div>
+                <a-button type="text" danger size="small" @click="removeVoucher">
+                  Xóa
+                </a-button>
+              </div>
+              <div v-if="voucherError" class="voucher-error">{{ voucherError }}</div>
+            </div>
+
+            <a-divider style="margin: 12px 0" />
+
             <div class="summary-row">
               <span>Tạm tính</span>
               <span>{{ cart.total.toLocaleString() }}đ</span>
+            </div>
+            <div v-if="discountAmount > 0" class="summary-row discount-row">
+              <span>Giảm giá</span>
+              <span>-{{ discountAmount.toLocaleString() }}đ</span>
             </div>
             <div class="summary-row">
               <span>Vận chuyển</span>
@@ -73,7 +107,7 @@
             </div>
             <div class="summary-total">
               <span>Tổng cộng</span>
-              <span>{{ cart.total.toLocaleString() }}đ</span>
+              <span>{{ finalTotal.toLocaleString() }}đ</span>
             </div>
 
             <a-button
@@ -97,7 +131,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { message } from 'ant-design-vue';
 import AppHeader from '../components/AppHeader.vue';
@@ -109,6 +143,46 @@ const cart = useCartStore();
 const router = useRouter();
 const submitting = ref(false);
 const form = ref({ customer_name: '', customer_phone: '', customer_address: '' });
+
+// Voucher state
+const voucherCode = ref('');
+const appliedVoucher = ref(null);
+const discountAmount = ref(0);
+const checkingVoucher = ref(false);
+const voucherError = ref('');
+
+const finalTotal = computed(() => cart.total - discountAmount.value);
+
+async function applyVoucher() {
+  voucherError.value = '';
+  if (!voucherCode.value.trim()) {
+    voucherError.value = 'Vui lòng nhập mã voucher';
+    return;
+  }
+  checkingVoucher.value = true;
+  try {
+    const { data } = await http.post('/vouchers/validate', {
+      code: voucherCode.value.trim(),
+      orderAmount: cart.total,
+    });
+    appliedVoucher.value = data.data.voucher;
+    discountAmount.value = data.data.discountAmount;
+    message.success('Áp dụng voucher thành công!');
+  } catch (err) {
+    voucherError.value = err.response?.data?.message || 'Mã voucher không hợp lệ';
+    appliedVoucher.value = null;
+    discountAmount.value = 0;
+  } finally {
+    checkingVoucher.value = false;
+  }
+}
+
+function removeVoucher() {
+  appliedVoucher.value = null;
+  discountAmount.value = 0;
+  voucherCode.value = '';
+  voucherError.value = '';
+}
 
 async function submitOrder() {
   if (!form.value.customer_name || !form.value.customer_phone || !form.value.customer_address) {
@@ -124,6 +198,7 @@ async function submitOrder() {
     await http.post('/orders', {
       ...form.value,
       items: cart.items.map((i) => ({ product_id: i.id, quantity: i.quantity })),
+      voucher_code: appliedVoucher.value ? appliedVoucher.value.code : undefined,
     });
     message.success('Đặt hàng thành công! Cảm ơn bạn đã mua hàng 🎉');
     cart.items = [];
@@ -203,6 +278,7 @@ async function submitOrder() {
   color: #666;
   margin-bottom: 8px;
 }
+.discount-row { color: #52c41a; font-weight: 500; }
 .free { color: #52c41a; font-weight: 500; }
 .summary-total {
   display: flex;
@@ -219,5 +295,40 @@ async function submitOrder() {
   color: #999;
   margin-top: 10px;
   margin-bottom: 0;
+}
+
+/* Voucher styles */
+.voucher-box { margin: 4px 0; }
+.voucher-input-row {
+  display: flex;
+  gap: 8px;
+}
+.voucher-applied {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f6ffed;
+  border: 1px solid #b7eb8f;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.voucher-applied-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.voucher-tag {
+  font-weight: 700;
+  font-size: 13px;
+  color: #389e0d;
+}
+.voucher-applied-desc {
+  font-size: 11px;
+  color: #888;
+}
+.voucher-error {
+  color: #ff4d4f;
+  font-size: 12px;
+  margin-top: 6px;
 }
 </style>

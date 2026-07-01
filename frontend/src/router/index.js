@@ -14,6 +14,7 @@ import RegisterView from '../views/RegisterView.vue';
 import AdminCategoriesView from '../views/admin/AdminCategoriesView.vue';
 import AdminHomeView from '../views/admin/AdminHomeView.vue';
 import WishlistView from '../views/WishlistView.vue';
+import AdminVouchersView from '../views/admin/AdminVouchersView.vue';
 
 const routes = [
   { path: '/', component: HomeView },
@@ -30,6 +31,7 @@ const routes = [
   { path: '/admin/orders', component: AdminOrdersView, meta: { requiresAdmin: true } },
   { path: '/admin/categories', component: AdminCategoriesView, meta: { requiresAdmin: true } },
   { path: '/wishlist', component: WishlistView },
+  { path: '/admin/vouchers', component: AdminVouchersView, meta: { requiresAdmin: true } },
 ];
 
 const router = createRouter({

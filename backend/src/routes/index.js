@@ -6,4 +6,6 @@ router.use('/categories', require('../modules/categories/category.routes'));
 router.use('/upload',     require('../modules/upload/upload.routes'));
 router.use('/dashboard', require('../modules/dashboard/dashboard.routes'));
 router.use('/wishlist', require('../modules/wishlist/wishlist.routes'));
+router.use('/reviews', require('../modules/reviews/review.routes'));
+router.use('/vouchers', require('../modules/vouchers/voucher.routes'));
 module.exports = router;

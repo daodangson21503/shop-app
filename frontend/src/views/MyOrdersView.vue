@@ -32,7 +32,7 @@
 
           <div v-else class="orders-list">
             <div v-for="order in filteredOrders" :key="order.id" class="order-card">
-              <div class="order-header">
+              <div class="order-header" @click="openDetail(order)">
                 <div class="order-meta">
                   <span class="order-id">Đơn #{{ order.id.slice(0, 8) }}</span>
                   <span class="order-date">{{ formatDate(order.createdAt) }}</span>
@@ -43,7 +43,7 @@
                 </div>
               </div>
 
-              <div class="order-items">
+              <div class="order-items" @click="openDetail(order)">
                 <div v-for="item in order.items" :key="item.id" class="order-item">
                   <span class="item-name">{{ item.productName }}</span>
                   <span class="item-qty">x{{ item.quantity }}</span>
@@ -57,28 +57,80 @@
                 </span>
                 <span class="order-total">{{ Number(order.totalAmount).toLocaleString() }}đ</span>
               </div>
+
+              <div class="order-actions">
+                <a-button size="small" @click="openDetail(order)">Xem chi tiết</a-button>
+                <a-button size="small" @click="reorder(order)">Mua lại</a-button>
+                <a-button
+                  v-if="order.status === 'pending'"
+                  size="small"
+                  danger
+                  @click="confirmCancel(order)"
+                >
+                  Hủy đơn
+                </a-button>
+              </div>
             </div>
           </div>
         </template>
       </a-spin>
     </div>
     <AppFooter />
+
+    <!-- Modal chi tiết đơn hàng -->
+    <a-modal v-model:open="detailVisible" title="Chi tiết đơn hàng" :footer="null" width="560px">
+      <div v-if="selectedOrder" class="modal-content">
+        <div class="modal-status">
+          <span class="status-badge" :class="`status-${selectedOrder.status}`">
+            <span class="status-dot"></span>
+            {{ statusText(selectedOrder.status) }}
+          </span>
+          <span class="modal-order-id">#{{ selectedOrder.id.slice(0, 8) }}</span>
+        </div>
+
+        <div class="modal-section">
+          <div class="modal-section-title">📍 Thông tin nhận hàng</div>
+          <p><strong>{{ selectedOrder.customerName }}</strong> — {{ selectedOrder.customerPhone }}</p>
+          <p class="address-text">{{ selectedOrder.customerAddress }}</p>
+        </div>
+
+        <div class="modal-section">
+          <div class="modal-section-title">🛒 Sản phẩm</div>
+          <div v-for="item in selectedOrder.items" :key="item.id" class="modal-item">
+            <span class="modal-item-name">{{ item.productName }} x{{ item.quantity }}</span>
+            <span class="modal-item-price">{{ Number(item.subtotal).toLocaleString() }}đ</span>
+          </div>
+        </div>
+
+        <a-divider style="margin: 12px 0" />
+
+        <div class="modal-total-row">
+          <span>Tổng cộng</span>
+          <span class="modal-total">{{ Number(selectedOrder.totalAmount).toLocaleString() }}đ</span>
+        </div>
+      </div>
+    </a-modal>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { message, Modal } from 'ant-design-vue';
 import AppHeader from '../components/AppHeader.vue';
 import AppFooter from '../components/AppFooter.vue';
 import http from '../api/axios';
 import { useAuthStore } from '../stores/auth.store';
+import { useCartStore } from '../stores/cart.store';
 
 const auth = useAuthStore();
+const cart = useCartStore();
 const router = useRouter();
 const orders = ref([]);
 const loading = ref(false);
 const activeStatus = ref('all');
+const detailVisible = ref(false);
+const selectedOrder = ref(null);
 
 const statusTabs = [
   { value: 'all', label: 'Tất cả' },
@@ -111,11 +163,42 @@ function formatDate(d) {
   });
 }
 
-onMounted(async () => {
-  if (!auth.isLoggedIn) {
-    router.push('/login');
-    return;
-  }
+function openDetail(order) {
+  selectedOrder.value = order;
+  detailVisible.value = true;
+}
+
+function reorder(order) {
+  order.items.forEach((item) => {
+    cart.addItem(
+      { id: item.productId, name: item.productName, price: item.unitPrice, image_url: '' },
+      item.quantity
+    );
+  });
+  message.success('Đã thêm sản phẩm vào giỏ hàng');
+  router.push('/cart');
+}
+
+function confirmCancel(order) {
+  Modal.confirm({
+    title: 'Xác nhận hủy đơn hàng?',
+    content: `Đơn #${order.id.slice(0, 8)} sẽ bị hủy và không thể khôi phục.`,
+    okText: 'Hủy đơn',
+    okType: 'danger',
+    cancelText: 'Đóng',
+    onOk: async () => {
+      try {
+        await http.patch(`/orders/${order.id}/cancel`);
+        message.success('Đã hủy đơn hàng');
+        fetchOrders();
+      } catch (err) {
+        message.error(err.response?.data?.message || 'Hủy đơn thất bại');
+      }
+    },
+  });
+}
+
+async function fetchOrders() {
   loading.value = true;
   try {
     const { data } = await http.get('/orders/my-orders');
@@ -123,6 +206,14 @@ onMounted(async () => {
   } finally {
     loading.value = false;
   }
+}
+
+onMounted(() => {
+  if (!auth.isLoggedIn) {
+    router.push('/login');
+    return;
+  }
+  fetchOrders();
 });
 </script>
 
@@ -166,15 +257,8 @@ onMounted(async () => {
   white-space: nowrap;
   transition: all 0.15s;
 }
-.filter-tab:hover {
-  border-color: #ffccc7;
-  color: #ff424e;
-}
-.filter-tab.active {
-  background: #ff424e;
-  border-color: #ff424e;
-  color: #fff;
-}
+.filter-tab:hover { border-color: #ffccc7; color: #ff424e; }
+.filter-tab.active { background: #ff424e; border-color: #ff424e; color: #fff; }
 .tab-count {
   background: rgba(0, 0, 0, 0.08);
   border-radius: 10px;
@@ -182,9 +266,7 @@ onMounted(async () => {
   font-size: 11px;
   font-weight: 700;
 }
-.filter-tab.active .tab-count {
-  background: rgba(255, 255, 255, 0.25);
-}
+.filter-tab.active .tab-count { background: rgba(255, 255, 255, 0.25); }
 
 .empty-state {
   text-align: center;
@@ -198,11 +280,7 @@ onMounted(async () => {
 .empty-icon { font-size: 48px; margin-bottom: 16px; }
 .empty-state p { margin-bottom: 16px; font-size: 15px; }
 
-.orders-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
+.orders-list { display: flex; flex-direction: column; gap: 16px; }
 .order-card {
   background: #fff;
   border: 1px solid #f0f0f0;
@@ -210,9 +288,7 @@ onMounted(async () => {
   overflow: hidden;
   transition: box-shadow 0.2s;
 }
-.order-card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-}
+.order-card:hover { box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06); }
 
 .order-header {
   display: flex;
@@ -221,6 +297,7 @@ onMounted(async () => {
   padding: 14px 18px;
   background: #fafafa;
   border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
 }
 .order-meta { display: flex; flex-direction: column; gap: 2px; }
 .order-id { font-weight: 600; font-size: 14px; }
@@ -236,7 +313,6 @@ onMounted(async () => {
   font-weight: 600;
 }
 .status-dot { width: 6px; height: 6px; border-radius: 50%; }
-
 .status-pending { background: #fff7e6; color: #d48806; }
 .status-pending .status-dot { background: #d48806; }
 .status-confirmed { background: #e6f4ff; color: #1677ff; }
@@ -248,13 +324,8 @@ onMounted(async () => {
 .status-cancelled { background: #fff1f0; color: #cf1322; }
 .status-cancelled .status-dot { background: #cf1322; }
 
-.order-items { padding: 12px 18px; }
-.order-item {
-  display: flex;
-  align-items: center;
-  padding: 6px 0;
-  font-size: 14px;
-}
+.order-items { padding: 12px 18px; cursor: pointer; }
+.order-item { display: flex; align-items: center; padding: 6px 0; font-size: 14px; }
 .item-name { flex: 1; color: #333; }
 .item-qty { color: #999; margin-right: 16px; font-size: 13px; }
 .item-price { font-weight: 500; color: #555; min-width: 90px; text-align: right; }
@@ -269,4 +340,37 @@ onMounted(async () => {
 .footer-label { font-size: 14px; color: #666; }
 .item-count { font-size: 12px; color: #aaa; }
 .order-total { font-weight: 700; font-size: 18px; color: #ff424e; }
+
+.order-actions {
+  display: flex;
+  gap: 8px;
+  padding: 0 18px 16px;
+}
+
+.modal-content { padding-top: 4px; }
+.modal-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.modal-order-id { font-size: 13px; color: #999; }
+.modal-section { margin-bottom: 16px; }
+.modal-section-title { font-weight: 600; font-size: 13px; margin-bottom: 8px; color: #444; }
+.address-text { color: #666; font-size: 13.5px; }
+.modal-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  font-size: 13.5px;
+}
+.modal-item-name { color: #333; }
+.modal-item-price { font-weight: 500; color: #555; }
+.modal-total-row {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 16px;
+}
+.modal-total { color: #ff424e; font-size: 19px; }
 </style>
