@@ -16,6 +16,8 @@ services:
   backend:
     build: ./backend
     restart: always
+    ports:
+      - "3000:3000"
     environment:
       PORT: 3000
       DB_HOST: postgres
@@ -26,8 +28,9 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       LOG_LEVEL: info
       DATABASE_URL: "postgresql://shop_user:${DB_PASSWORD}@postgres:5432/shop_db?schema=public"
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
     volumes:
-      - uploads_data:/app/uploads 
+      - ./uploads:/app/uploads 
     depends_on:
       - postgres
     networks:
@@ -36,6 +39,8 @@ services:
   frontend:
     build: ./frontend
     restart: always
+    environment:
+      NUXT_PUBLIC_GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
     depends_on:
       - backend
     networks:

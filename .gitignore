@@ -1,5 +1,11 @@
 node_modules/
 .env
 dist/
+.nuxt/
+.output/
+uploads/
 *.log
 pg_data/
+nul
+*admin_login.html
+
