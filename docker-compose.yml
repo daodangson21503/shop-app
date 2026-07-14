@@ -116,6 +116,7 @@ services:
       - shop_net
 
   jenkins:
+    build: ./jenkins
     image: jenkins-docker
     restart: always
     ports:
