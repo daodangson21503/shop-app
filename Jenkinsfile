@@ -12,17 +12,20 @@ pipeline {
             }
         }
 
-        stage('Build Backend') {
-            steps {
-                sh 'docker build -t sondd2/shop-backend:$BUILD_NUMBER ./backend'
-                sh 'docker tag sondd2/shop-backend:$BUILD_NUMBER sondd2/shop-backend:latest'
-            }
-        }
-
-        stage('Build Frontend') {
-            steps {
-                sh 'docker build -t sondd2/shop-frontend:$BUILD_NUMBER ./frontend'
-                sh 'docker tag sondd2/shop-frontend:$BUILD_NUMBER sondd2/shop-frontend:latest'
+        stage('Build Docker Images') {
+            parallel {
+                stage('Build Backend') {
+                    steps {
+                        sh 'docker build -t sondd2/shop-backend:$BUILD_NUMBER ./backend'
+                        sh 'docker tag sondd2/shop-backend:$BUILD_NUMBER sondd2/shop-backend:latest'
+                    }
+                }
+                stage('Build Frontend') {
+                    steps {
+                        sh 'docker build -t sondd2/shop-frontend:$BUILD_NUMBER ./frontend'
+                        sh 'docker tag sondd2/shop-frontend:$BUILD_NUMBER sondd2/shop-frontend:latest'
+                    }
+                }
             }
         }
 
@@ -33,11 +36,19 @@ pipeline {
         }
 
         stage('Push Images') {
-            steps {
-                sh 'docker push sondd2/shop-backend:$BUILD_NUMBER'
-                sh 'docker push sondd2/shop-backend:latest'
-                sh 'docker push sondd2/shop-frontend:$BUILD_NUMBER'
-                sh 'docker push sondd2/shop-frontend:latest'
+            parallel {
+                stage('Push Backend') {
+                    steps {
+                        sh 'docker push sondd2/shop-backend:$BUILD_NUMBER'
+                        sh 'docker push sondd2/shop-backend:latest'
+                    }
+                }
+                stage('Push Frontend') {
+                    steps {
+                        sh 'docker push sondd2/shop-frontend:$BUILD_NUMBER'
+                        sh 'docker push sondd2/shop-frontend:latest'
+                    }
+                }
             }
         }
     }
