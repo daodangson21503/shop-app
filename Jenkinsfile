@@ -39,14 +39,12 @@ pipeline {
             parallel {
                 stage('Push Backend') {
                     steps {
-                        sh 'docker push sondd2/shop-backend:$BUILD_NUMBER'
-                        sh 'docker push sondd2/shop-backend:latest'
+                        sh 'docker push sondd2/shop-backend --all-tags'
                     }
                 }
                 stage('Push Frontend') {
                     steps {
-                        sh 'docker push sondd2/shop-frontend:$BUILD_NUMBER'
-                        sh 'docker push sondd2/shop-frontend:latest'
+                        sh 'docker push sondd2/shop-frontend --all-tags'
                     }
                 }
             }
