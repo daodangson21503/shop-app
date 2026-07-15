@@ -12,31 +12,17 @@ pipeline {
             }
         }
 
-        stage('Backend - Install & Build') {
-            steps {
-                dir('backend') {
-                    sh 'npm ci'
-                    sh 'npx prisma generate'
-                    sh 'npm run build'
-                }
-            }
-        }
-
-        stage('Frontend - Install & Build') {
-            steps {
-                dir('frontend') {
-                    sh 'npm ci'
-                    sh 'npm run build'
-                }
-            }
-        }
-
-        stage('Build Docker Images') {
+        stage('Build Backend') {
             steps {
                 sh 'docker build -t sondd2/shop-backend:$BUILD_NUMBER ./backend'
-                sh 'docker build -t sondd2/shop-backend:latest ./backend'
+                sh 'docker tag sondd2/shop-backend:$BUILD_NUMBER sondd2/shop-backend:latest'
+            }
+        }
+
+        stage('Build Frontend') {
+            steps {
                 sh 'docker build -t sondd2/shop-frontend:$BUILD_NUMBER ./frontend'
-                sh 'docker build -t sondd2/shop-frontend:latest ./frontend'
+                sh 'docker tag sondd2/shop-frontend:$BUILD_NUMBER sondd2/shop-frontend:latest'
             }
         }
 
