@@ -22,7 +22,7 @@ pipeline {
                 }
                 stage('Build Frontend') {
                     steps {
-                        sh 'docker build -t sondd2/shop-frontend:$BUILD_NUMBER ./frontend'
+                        sh 'docker build --build-arg API_PROXY_TARGET=http://shop-app-backend:3000 -t sondd2/shop-frontend:$BUILD_NUMBER ./frontend'
                         sh 'docker tag sondd2/shop-frontend:$BUILD_NUMBER sondd2/shop-frontend:latest'
                     }
                 }
@@ -47,6 +47,20 @@ pipeline {
                         sh 'docker push sondd2/shop-frontend --all-tags'
                     }
                 }
+            }
+        }
+
+        stage('Deploy to K8s') {
+            when {
+                expression {
+                    return fileExists('k8s/')
+                }
+            }
+            steps {
+                sh 'kubectl set image deployment/shop-app-backend -n shop-app backend=sondd2/shop-backend:$BUILD_NUMBER'
+                sh 'kubectl set image deployment/shop-app-frontend -n shop-app frontend=sondd2/shop-frontend:$BUILD_NUMBER'
+                sh 'kubectl rollout status deployment/shop-app-backend -n shop-app'
+                sh 'kubectl rollout status deployment/shop-app-frontend -n shop-app'
             }
         }
     }

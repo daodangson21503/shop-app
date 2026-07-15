@@ -1,0 +1,34 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: shop-app-ingress
+  namespace: shop-app
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 10m
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: shopgiadung.local
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: shop-app-backend
+                port:
+                  number: 3000
+          - path: /uploads
+            pathType: Prefix
+            backend:
+              service:
+                name: shop-app-backend
+                port:
+                  number: 3000
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: shop-app-frontend
+                port:
+                  number: 3000

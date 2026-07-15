@@ -26,12 +26,12 @@ export default defineNuxtConfig({
         { name: 'description', content: 'ShopGiaDung - Hệ thống bán hàng gia dụng online' },
       ],
       link: [
-        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+        { favicon: { type: 'image/svg+xml', href: '/favicon.svg' } },
       ],
     },
   },
   routeRules: {
-    '/api/**': { proxy: { to: 'http://localhost:3000/api/**' } },
-    '/uploads/**': { proxy: { to: 'http://localhost:3000/uploads/**' } },
+    '/api/**': { proxy: { to: `${process.env.API_PROXY_TARGET || 'http://localhost:3000'}/api/**` } },
+    '/uploads/**': { proxy: { to: `${process.env.API_PROXY_TARGET || 'http://localhost:3000'}/uploads/**` } },
   },
 })

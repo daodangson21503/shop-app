@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shop-app-frontend
+  namespace: shop-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shop-app-frontend
+  template:
+    metadata:
+      labels:
+        app: shop-app-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: sondd2/shop-frontend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NUXT_PUBLIC_GOOGLE_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: shop-app-secret
+                  key: GOOGLE_CLIENT_ID
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"

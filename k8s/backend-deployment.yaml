@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shop-app-backend
+  namespace: shop-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shop-app-backend
+  template:
+    metadata:
+      labels:
+        app: shop-app-backend
+    spec:
+      initContainers:
+        - name: run-migrations
+          image: sondd2/shop-backend:latest
+          imagePullPolicy: Always
+          command:
+            - sh
+            - -c
+            - npx prisma migrate deploy && node prisma/seed.js
+          envFrom:
+            - configMapRef:
+                name: shop-app-config
+            - secretRef:
+                name: shop-app-secret
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: shop-app-secret
+                  key: DATABASE_URL
+      containers:
+        - name: backend
+          image: sondd2/shop-backend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: shop-app-config
+            - secretRef:
+                name: shop-app-secret
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: shop-app-secret
+                  key: DATABASE_URL
+          volumeMounts:
+            - name: uploads
+              mountPath: /app/uploads
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+      volumes:
+        - name: uploads
+          persistentVolumeClaim:
+            claimName: uploads-pvc
