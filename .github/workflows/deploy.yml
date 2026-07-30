@@ -1,0 +1,107 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - '.github/workflows/deploy.yml'
+
+env:
+  BACKEND_IMAGE: sondd2/shop-backend
+  FRONTEND_IMAGE: sondd2/shop-frontend
+  GITOPS_REPO: daodangson21503/shop-app-gitops
+  GITOPS_BRANCH: master
+  GITOPS_FILE: overlays/production/kustomization.yaml
+
+jobs:
+  build-backend:
+    name: Build & Push Backend
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: true
+          tags: |
+            ${{ env.BACKEND_IMAGE }}:${{ github.sha }}
+            ${{ env.BACKEND_IMAGE }}:latest
+
+  build-frontend:
+    name: Build & Push Frontend
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: true
+          tags: |
+            ${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
+            ${{ env.FRONTEND_IMAGE }}:latest
+          build-args: |
+            API_PROXY_TARGET=http://shop-app-backend:3000
+
+  deploy:
+    name: Update GitOps (ArgoCD auto-sync)
+    needs: [build-backend, build-frontend]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GitOps repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.GITOPS_REPO }}
+          ref: ${{ env.GITOPS_BRANCH }}
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Update image tags
+        run: |
+          # Cập nhật tag backend: tìm dòng "name: sondd2/shop-backend"
+          # rồi thay "newTag:" ở dòng tiếp theo
+          sed -i \
+            "/name: sondd2\/shop-backend/,/newTag:/ s|newTag:.*|newTag: ${{ needs.build-backend.outputs.tag }}|" \
+            ${{ env.GITOPS_FILE }}
+
+          # Cập nhật tag frontend
+          sed -i \
+            "/name: sondd2\/shop-frontend/,/newTag:/ s|newTag:.*|newTag: ${{ needs.build-frontend.outputs.tag }}|" \
+            ${{ env.GITOPS_FILE }}
+
+          echo "=== Kết quả sau khi update ==="
+          grep -A1 'name: sondd2' ${{ env.GITOPS_FILE }}
+
+      - name: Commit and push
+        run: |
+          git config user.name "shop-ci-bot"
+          git config user.email "ci@shopgiadung.vn"
+          git add ${{ env.GITOPS_FILE }}
+          if git diff --cached --quiet; then
+            echo "Không có thay đổi — bỏ qua commit"
+          else
+            git commit -m "deploy: backend ${{ needs.build-backend.outputs.tag }}"
+            git push
+            echo "✓ Đã push lên GitOps repo"
+            echo "→ ArgoCD sẽ tự động sync trong vòng 1-3 phút"
+          fi
