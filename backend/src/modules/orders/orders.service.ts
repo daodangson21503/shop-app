@@ -6,7 +6,7 @@ export class OrdersService {
   constructor(private prisma: PrismaService) {}
 
   async create(data: any) {
-    const { customer_name, customer_phone, customer_address, items, user_id, voucher_code } = data;
+    const { customer_name, customer_phone, customer_address, customer_province, customer_district, customer_ward, shipping_fee, items, user_id, voucher_code } = data;
 
     if (!items || items.length === 0) {
       throw new BadRequestException('Giỏ hàng trống');
@@ -78,7 +78,11 @@ export class OrdersService {
         });
       }
 
-      const totalAmount = subtotalAmount - discountAmount;
+      const shippingProvince = customer_province || null;
+      const shippingDistrict = customer_district || null;
+      const shippingWard = customer_ward || null;
+      const shipFee = Number(shipping_fee) || 0;
+      const totalAmount = subtotalAmount - discountAmount + shipFee;
 
       const order = await tx.order.create({
         data: {
@@ -87,6 +91,10 @@ export class OrdersService {
           customerName: customer_name,
           customerPhone: customer_phone,
           customerAddress: customer_address,
+          shippingProvince,
+          shippingDistrict,
+          shippingWard,
+          shippingFee: shipFee,
           subtotalAmount,
           discountAmount,
           totalAmount,

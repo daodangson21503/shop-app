@@ -19,63 +19,91 @@ async function main() {
       description: 'Nồi cơm điện công nghệ mới với chế độ nấu thông minh, giữ cơm nóng 24h. Lòng nồi hợp kim nhôm chống dính cao cấp.',
       price: 850000, originalPrice: 990000, stock: 50, soldCount: 128, views: 2500,
       brand: 'Sunhouse', weight: 2.5, warranty: '12 tháng', isFeatured: true,
-      imageUrl: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400',
+      imageUrl: '/uploads/products/noi-com-dien-1-8l.jpg',
+    },
+    {
+      categoryId: cat1.id, name: 'Bộ nồi inox 5 đáy cao cấp', slug: 'bo-noi-inox-5-day-cao-cap',
+      description: 'Bộ nồi inox 5 đáy cao cấp phù hợp với mọi bếp, bền đẹp, chống dính hiệu quả.',
+      price: 1890000, originalPrice: 2500000, stock: 30, soldCount: 45, views: 600,
+      brand: 'Sunhouse', weight: 3.5, warranty: '12 tháng',
+      imageUrl: '/uploads/products/bo-noi-inox-5-day-cao-cap.jpg',
+    },
+    {
+      categoryId: cat1.id, name: 'Máy xay sinh tố đa năng', slug: 'may-xay-sinh-to-da-nang',
+      description: 'Máy xay sinh tố đa năng 6 lưỡi dao, công suất 1000W, xay đá, trái cây dễ dàng.',
+      price: 890000, originalPrice: 1200000, stock: 25, soldCount: 67, views: 900,
+      brand: 'Philips', weight: 2.0, warranty: '12 tháng',
+      imageUrl: '/uploads/products/may-xay-sinh-to-da-nang.jpg',
+    },
+    {
+      categoryId: cat1.id, name: 'Nồi chiên không dầu 5.5L', slug: 'noi-chien-khong-dau-5-5l',
+      description: 'Nồi chiên không dầu 5.5L, công nghệ Rapid Air, giảm 80% dầu mỡ, an toàn cho sức khỏe.',
+      price: 1590000, originalPrice: 2200000, stock: 20, soldCount: 112, views: 2100,
+      brand: 'Philips', weight: 4.5, warranty: '24 tháng',
+      imageUrl: '/uploads/products/noi-chien-khong-dau-5-5l.jpg',
+    },
+    {
+      categoryId: cat1.id, name: 'Bếp từ đôi cao cấp', slug: 'bep-tu-doi-cao-cap',
+      description: 'Bếp từ đôi cao cấp, mặt kính Schott Ceran, cảm ứng thông minh, an toàn tuyệt đối.',
+      price: 4500000, originalPrice: 5800000, stock: 15, soldCount: 34, views: 1100,
+      brand: 'Sunhouse', weight: 8.0, warranty: '24 tháng',
+      imageUrl: '/uploads/products/bep-tu-doi-cao-cap.jpg',
     },
     {
       categoryId: cat1.id, name: 'Chảo chống dính 28cm', slug: 'chao-chong-dinh-28cm',
       description: 'Chảo chống dính cao cấp 3 lớp đáy từ, dùng được cho bếp từ. Tay cầm bakelite chống nóng.',
       price: 320000, originalPrice: 399000, stock: 100, soldCount: 345, views: 4200,
       brand: 'Lock&Lock', weight: 0.8, warranty: '6 tháng', isFeatured: true,
-      imageUrl: 'https://images.unsplash.com/photo-1590794056226-79ef3a8147e1?w=400',
+      imageUrl: '/uploads/products/chao-chong-dinh-28cm.jpg',
     },
     {
       categoryId: cat1.id, name: 'Bộ dao inox 5 món cao cấp', slug: 'bo-dao-inox-5-mon-cao-cap',
       description: 'Bộ dao bếp inox chống gỉ 5 món: dao đầu bếp, dao gọt, dao thái, dao xương, kéo. Lưỡi dao thép không gỉ Nhật Bản.',
       price: 450000, stock: 80, soldCount: 89, views: 1800,
       brand: 'Kai', weight: 1.2, warranty: '24 tháng',
-      imageUrl: 'https://images.unsplash.com/photo-1593618998160-3403e1e8c6e1?w=400',
+      imageUrl: '/uploads/products/bo-dao-inox-5-mon-cao-cap.jpg',
     },
     {
       categoryId: cat1.id, name: 'Máy xay sinh tố đa năng 2 cối', slug: 'may-xay-sinh-to-da-nang-2-coi',
       description: 'Máy xay công suất lớn 500W, 2 cối xay riêng biệt. Lưỡi dao thép không gỉ 4 cánh.',
       price: 690000, originalPrice: 850000, stock: 40, soldCount: 210, views: 3800,
       brand: 'Philips', weight: 3.0, warranty: '12 tháng', isFeatured: true,
-      imageUrl: 'https://images.unsplash.com/photo-1615361200141-f45040f367be?w=400',
+      imageUrl: '/uploads/products/may-xay-sinh-to-da-nang-2-coi.jpg',
     },
     {
       categoryId: cat2.id, name: 'Kệ để đồ phòng tắm inox', slug: 'ke-de-do-phong-tam-inox',
       description: 'Kệ inox 304 chống gỉ, chịu lực tốt. Phù hợp cho mọi không gian phòng tắm.',
       price: 220000, stock: 60, soldCount: 167, views: 2100,
       brand: 'Inax', weight: 0.5, warranty: '12 tháng',
-      imageUrl: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400',
+      imageUrl: '/uploads/products/ke-de-do-phong-tam-inox.jpg',
     },
     {
       categoryId: cat2.id, name: 'Thảm chân chống trượt', slug: 'tham-chan-chong-truot',
       description: 'Thảm cao su tổng hợp chống trượt, thấm nước tốt. Dễ vệ sinh, nhanh khô.',
       price: 95000, stock: 150, soldCount: 423, views: 5600,
       brand: 'Kodama', weight: 0.3, isFeatured: true,
-      imageUrl: 'https://images.unsplash.com/photo-1604800692423-0a3ce4b0e9ca?w=400',
+      imageUrl: '/uploads/products/tham-chan-chong-truot.jpg',
     },
     {
       categoryId: cat3.id, name: 'Quạt đứng điều khiển từ xa', slug: 'quat-dung-dieu-khien-tu-xa',
       description: 'Quạt 3 tốc độ gió, điều kèm remote. Chế độ xoay ngang, hẹn giờ tắt.',
       price: 590000, originalPrice: 720000, stock: 35, soldCount: 94, views: 1500,
       brand: 'Asia', weight: 4.5, warranty: '24 tháng',
-      imageUrl: 'https://images.unsplash.com/photo-1585129882278-e1e00a1ce48b?w=400',
+      imageUrl: '/uploads/products/quat-dung-dieu-khien-tu-xa.jpg',
     },
     {
       categoryId: cat4.id, name: 'Bộ dụng cụ làm vườn mini 7 món', slug: 'bo-dung-cu-lam-vuon-mini-7-mon',
       description: 'Đầy đủ dụng cụ cắt, xới, tỉa cây. Tay cầm nhựa chống trượt, sang trọng.',
       price: 165000, stock: 75, soldCount: 56, views: 890,
       brand: 'GardenPro', weight: 0.6, warranty: '6 tháng',
-      imageUrl: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400',
+      imageUrl: '/uploads/products/bo-dung-cu-lam-vuon-mini-7-mon.jpg',
     },
     {
       categoryId: cat5.id, name: 'Chổi lau nhà 360 độ', slug: 'choi-lau-nha-360-do',
       description: 'Xoay 360 độ, lau sạch mọi góc nhà. Sợi microfiber thấm nước gấp 5 lần thông thường.',
       price: 145000, stock: 130, soldCount: 289, views: 3200,
       brand: 'Sunshine', weight: 0.4, warranty: '3 tháng',
-      imageUrl: 'https://images.unsplash.com/photo-1585681415552-40f3b7e9c4c6?w=400',
+      imageUrl: '/uploads/products/choi-lau-nha-360-do.jpg',
     },
   ];
 
@@ -85,6 +113,27 @@ async function main() {
       { name: 'Dung tích', value: '1.8 lít' },
       { name: 'Công suất', value: '700W' },
       { name: 'Màu sắc', value: 'Trắng' },
+    ],
+    'bo-noi-inox-5-day-cao-cap': [
+      { name: 'Chất liệu', value: 'Inox 5 lớp' },
+      { name: 'Số lượng', value: '05 nồi' },
+      { name: 'Dùng cho bếp', value: 'Gas, điện, từ' },
+    ],
+    'may-xay-sinh-to-da-nang': [
+      { name: 'Chất liệu', value: 'Nhựa cao cấp, lưỡi thép không gỉ' },
+      { name: 'Dung tích', value: '1.5 lít' },
+      { name: 'Công suất', value: '1000W' },
+    ],
+    'noi-chien-khong-dau-5-5l': [
+      { name: 'Dung tích', value: '5.5 lít' },
+      { name: 'Công suất', value: '1500W' },
+      { name: 'Tính năng', value: 'Rapid Air, hẹn giờ' },
+    ],
+    'bep-tu-doi-cao-cap': [
+      { name: 'Chất liệu mặt kính', value: 'Schott Ceran' },
+      { name: 'Số vùng nấu', value: '02 vùng' },
+      { name: 'Công suất', value: '4000W' },
+      { name: 'Tính năng', value: 'Cảm ứng, khóa trẻ em' },
     ],
     'chao-chong-dinh-28cm': [
       { name: 'Chất liệu', value: 'Nhôm chống dính 3 lớp' },
@@ -140,6 +189,11 @@ async function main() {
     const created = await prisma.product.upsert({
       where: { slug: p.slug },
       update: {
+        name: p.name,
+        description: p.description,
+        price: p.price,
+        imageUrl: p.imageUrl,
+        categoryId: p.categoryId,
         originalPrice, brand, weight, warranty,
         soldCount, views, isFeatured,
       },
@@ -159,8 +213,8 @@ async function main() {
 
     const images = [
       { url: p.imageUrl, alt: p.name, sortOrder: 0 },
-      { url: `https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400`, alt: `${p.name} - Ảnh 2`, sortOrder: 1 },
-      { url: `https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400`, alt: `${p.name} - Ảnh 3`, sortOrder: 2 },
+      { url: `/uploads/products/${p.slug}.jpg`, alt: `${p.name} - Ảnh 2`, sortOrder: 1 },
+      { url: `/uploads/products/${p.slug}.jpg`, alt: `${p.name} - Ảnh 3`, sortOrder: 2 },
     ];
 
     // Delete existing images and create fresh set
@@ -216,6 +270,75 @@ async function main() {
     await prisma.voucher.upsert({ where: { code: v.code }, update: {}, create: v });
   }
 
+  // Shipping fees (base fee for first kg, per additional kg)
+  const shippingFees = [
+    { province: 'Hà Nội', baseFee: 20000, perKgFee: 3000, freeMin: 300000, estimatedDays: '1-2 ngày' },
+    { province: 'Hồ Chí Minh', baseFee: 25000, perKgFee: 4000, freeMin: 300000, estimatedDays: '2-3 ngày' },
+    { province: 'Đà Nẵng', baseFee: 25000, perKgFee: 4000, freeMin: 400000, estimatedDays: '2-3 ngày' },
+    { province: 'Hải Phòng', baseFee: 25000, perKgFee: 4000, freeMin: 400000, estimatedDays: '2-3 ngày' },
+    { province: 'Cần Thơ', baseFee: 30000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-4 ngày' },
+    { province: 'An Giang', baseFee: 35000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-5 ngày' },
+    { province: 'Bà Rịa - Vũng Tàu', baseFee: 30000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-4 ngày' },
+    { province: 'Bạc Liêu', baseFee: 35000, perKgFee: 6000, freeMin: 500000, estimatedDays: '4-5 ngày' },
+    { province: 'Bắc Giang', baseFee: 25000, perKgFee: 4000, freeMin: 400000, estimatedDays: '2-3 ngày' },
+    { province: 'Bắc Ninh', baseFee: 25000, perKgFee: 4000, freeMin: 400000, estimatedDays: '2-3 ngày' },
+    { province: 'Bến Tre', baseFee: 35000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-5 ngày' },
+    { province: 'Bình Dương', baseFee: 30000, perKgFee: 4000, freeMin: 400000, estimatedDays: '2-3 ngày' },
+    { province: 'Bình Định', baseFee: 30000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-4 ngày' },
+    { province: 'Bình Phước', baseFee: 30000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-4 ngày' },
+    { province: 'Bình Thuận', baseFee: 35000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-4 ngày' },
+    { province: 'Cà Mau', baseFee: 40000, perKgFee: 6000, freeMin: 500000, estimatedDays: '4-6 ngày' },
+    { province: 'Cao Bằng', baseFee: 35000, perKgFee: 5000, freeMin: 500000, estimatedDays: '4-5 ngày' },
+    { province: 'Đắk Lắk', baseFee: 35000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-5 ngày' },
+    { province: 'Đắk Nông', baseFee: 35000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-5 ngày' },
+    { province: 'Điện Biên', baseFee: 40000, perKgFee: 6000, freeMin: 500000, estimatedDays: '4-6 ngày' },
+    { province: 'Đồng Nai', baseFee: 30000, perKgFee: 4000, freeMin: 400000, estimatedDays: '2-3 ngày' },
+    { province: 'Đồng Tháp', baseFee: 35000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-5 ngày' },
+    { province: 'Gia Lai', baseFee: 35000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-5 ngày' },
+    { province: 'Hà Giang', baseFee: 35000, perKgFee: 5000, freeMin: 500000, estimatedDays: '4-5 ngày' },
+    { province: 'Hà Nam', baseFee: 25000, perKgFee: 4000, freeMin: 400000, estimatedDays: '2-3 ngày' },
+    { province: 'Hà Tĩnh', baseFee: 30000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-4 ngày' },
+    { province: 'Hải Dương', baseFee: 25000, perKgFee: 4000, freeMin: 400000, estimatedDays: '2-3 ngày' },
+    { province: 'Hậu Giang', baseFee: 35000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-5 ngày' },
+    { province: 'Hoà Bình', baseFee: 25000, perKgFee: 4000, freeMin: 400000, estimatedDays: '2-3 ngày' },
+    { province: 'Hưng Yên', baseFee: 25000, perKgFee: 4000, freeMin: 400000, estimatedDays: '2-3 ngày' },
+    { province: 'Khánh Hòa', baseFee: 30000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-4 ngày' },
+    { province: 'Kiên Giang', baseFee: 35000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-5 ngày' },
+    { province: 'Kon Tum', baseFee: 35000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-5 ngày' },
+    { province: 'Lai Châu', baseFee: 40000, perKgFee: 6000, freeMin: 500000, estimatedDays: '4-6 ngày' },
+    { province: 'Lạng Sơn', baseFee: 30000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-4 ngày' },
+    { province: 'Lào Cai', baseFee: 35000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-5 ngày' },
+    { province: 'Lâm Đồng', baseFee: 35000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-4 ngày' },
+    { province: 'Long An', baseFee: 30000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-4 ngày' },
+    { province: 'Nam Định', baseFee: 25000, perKgFee: 4000, freeMin: 400000, estimatedDays: '2-3 ngày' },
+    { province: 'Nghệ An', baseFee: 30000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-4 ngày' },
+    { province: 'Ninh Bình', baseFee: 25000, perKgFee: 4000, freeMin: 400000, estimatedDays: '2-3 ngày' },
+    { province: 'Ninh Thuận', baseFee: 35000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-4 ngày' },
+    { province: 'Phú Thọ', baseFee: 25000, perKgFee: 4000, freeMin: 400000, estimatedDays: '2-3 ngày' },
+    { province: 'Phú Yên', baseFee: 30000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-4 ngày' },
+    { province: 'Quảng Bình', baseFee: 30000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-4 ngày' },
+    { province: 'Quảng Nam', baseFee: 30000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-4 ngày' },
+    { province: 'Quảng Ngãi', baseFee: 30000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-4 ngày' },
+    { province: 'Quảng Ninh', baseFee: 25000, perKgFee: 4000, freeMin: 400000, estimatedDays: '2-3 ngày' },
+    { province: 'Quảng Trị', baseFee: 30000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-4 ngày' },
+    { province: 'Sóc Trăng', baseFee: 35000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-5 ngày' },
+    { province: 'Sơn La', baseFee: 35000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-5 ngày' },
+    { province: 'Tây Ninh', baseFee: 30000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-4 ngày' },
+    { province: 'Thái Bình', baseFee: 25000, perKgFee: 4000, freeMin: 400000, estimatedDays: '2-3 ngày' },
+    { province: 'Thái Nguyên', baseFee: 25000, perKgFee: 4000, freeMin: 400000, estimatedDays: '2-3 ngày' },
+    { province: 'Thanh Hóa', baseFee: 25000, perKgFee: 4000, freeMin: 400000, estimatedDays: '2-3 ngày' },
+    { province: 'Thừa Thiên Huế', baseFee: 30000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-4 ngày' },
+    { province: 'Tiền Giang', baseFee: 35000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-5 ngày' },
+    { province: 'Trà Vinh', baseFee: 35000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-5 ngày' },
+    { province: 'Tuyên Quang', baseFee: 30000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-4 ngày' },
+    { province: 'Vĩnh Long', baseFee: 35000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-5 ngày' },
+    { province: 'Vĩnh Phúc', baseFee: 25000, perKgFee: 4000, freeMin: 400000, estimatedDays: '2-3 ngày' },
+    { province: 'Yên Bái', baseFee: 30000, perKgFee: 5000, freeMin: 500000, estimatedDays: '3-4 ngày' },
+  ];
+
+  await prisma.shippingFee.deleteMany();
+  await prisma.shippingFee.createMany({ data: shippingFees });
+
   // Settings
   const settings = [
     { key: 'site_name', value: 'ShopGiaDung' },
@@ -226,8 +349,6 @@ async function main() {
     { key: 'contact_address', value: 'Thôn Phúc Đức, Xã Sài Sơn, Huyện Quốc Oai, Hà Nội' },
     { key: 'social_facebook', value: 'https://facebook.com/shopgiadung' },
     { key: 'social_youtube', value: 'https://youtube.com/@shopgiadung' },
-    { key: 'shipping_fee', value: '30000' },
-    { key: 'free_shipping_min', value: '500000' },
     { key: 'seo_title', value: 'ShopGiaDung - Đồ gia dụng chính hãng giá tốt' },
     { key: 'seo_description', value: 'ShopGiaDung cung cấp đồ gia dụng chính hãng giá tốt nhất thị trường. Miễn phí vận chuyển cho đơn trên 500.000đ.' },
   ];
@@ -238,9 +359,9 @@ async function main() {
 
   // Sliders (homepage banners)
   const sliders = [
-    { title: 'Mùa hè sôi động', subtitle: 'Giảm đến 30% đồ gia dụng mùa hè', imageUrl: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200', linkUrl: '/products?sort=price_asc', sortOrder: 0 },
-    { title: 'Bộ sưu tập nhà bếp', subtitle: 'Ưu đãi đặc biệt cho bộ nồi chảo cao cấp', imageUrl: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1200', linkUrl: '/products?category=1', sortOrder: 1 },
-    { title: 'Gia dụng chính hãng', subtitle: 'Cam kết chất lượng, bảo hành 12 tháng', imageUrl: 'https://images.unsplash.com/photo-1580651315530-69c8e0026377?w=1200', linkUrl: '/products', sortOrder: 2 },
+    { title: 'Mùa hè sôi động', subtitle: 'Giảm đến 30% đồ gia dụng mùa hè', imageUrl: '/uploads/slider-summer.jpg', linkUrl: '/products?sort=price_asc', sortOrder: 0 },
+    { title: 'Bộ sưu tập nhà bếp', subtitle: 'Ưu đãi đặc biệt cho bộ nồi chảo cao cấp', imageUrl: '/uploads/slider-kitchen.jpg', linkUrl: '/products?category=1', sortOrder: 1 },
+    { title: 'Gia dụng chính hãng', subtitle: 'Cam kết chất lượng, bảo hành 12 tháng', imageUrl: '/uploads/slider-genuine.jpg', linkUrl: '/products', sortOrder: 2 },
   ];
 
   await prisma.slider.deleteMany();

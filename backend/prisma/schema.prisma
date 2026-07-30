@@ -299,6 +299,18 @@ model Slider {
   @@map("sliders")
 }
 
+model ShippingFee {
+  id             Int      @id @default(autoincrement())
+  province       String
+  baseFee        Decimal  @db.Decimal(10, 0) @map("base_fee")
+  perKgFee       Decimal  @db.Decimal(10, 0) @default(0) @map("per_kg_fee")
+  freeMin        Decimal  @db.Decimal(14, 2) @default(0) @map("free_min")
+  estimatedDays  String?  @map("estimated_days")
+
+  @@index([province])
+  @@map("shipping_fees")
+}
+
 model Setting {
   id    Int    @id @default(autoincrement())
   key   String @unique

@@ -6,6 +6,7 @@ interface CartItem {
   slug: string
   price: number
   imageUrl?: string
+  weight?: number
   quantity: number
 }
 
@@ -33,6 +34,7 @@ export const useCartStore = defineStore('cart', {
           slug: product.slug,
           price: product.price,
           imageUrl: product.imageUrl,
+          weight: product.weight,
           quantity,
         })
       }

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useCartStore } from '~/stores/cart'
 import { useAuthStore } from '~/stores/auth'
 import { useToast } from '~/composables/useToast'
@@ -29,11 +29,16 @@ const orderSuccess = ref(false)
 const loadingAddresses = ref(true)
 const useNewAddress = ref(false)
 const shippingNote = ref('')
+const shippingInfo = ref({ fee: 0, estimatedDays: '', message: '' })
+const loadingShipping = ref(false)
 
 const items = computed(() => cartStore.items)
 const isEmpty = computed(() => items.value.length === 0)
 const subtotal = computed(() => cartStore.total)
-const shippingFee = computed(() => subtotal.value >= 500000 ? 0 : 30000)
+const totalWeight = computed(() =>
+  items.value.reduce((sum, i) => sum + (Number(i.weight) || 0.5) * i.quantity, 0)
+)
+const shippingFee = computed(() => shippingInfo.value.fee)
 const total = computed(() => Math.max(0, subtotal.value - discountAmount.value + shippingFee.value))
 
 const selectedAddress = computed(() => addresses.value.find((a) => a.id === selectedAddressId.value))
@@ -41,6 +46,25 @@ const selectedAddress = computed(() => addresses.value.find((a) => a.id === sele
 function formatPrice(price) {
   return new Intl.NumberFormat('vi-VN').format(price) + 'đ'
 }
+
+async function calculateShipping() {
+  const province = customerProvince.value.trim()
+  if (!province || items.value.length === 0) return
+  loadingShipping.value = true
+  try {
+    const api = useApi()
+    const res = await api(`/shipping/calculate?province=${encodeURIComponent(province)}&subtotal=${subtotal.value}&weight=${totalWeight.value}`)
+    shippingInfo.value = res
+  } catch {
+    shippingInfo.value = { fee: 30000, estimatedDays: '3-5 ngày', message: 'Phí vận chuyển mặc định' }
+  } finally {
+    loadingShipping.value = false
+  }
+}
+
+watch([customerProvince, subtotal], () => {
+  calculateShipping()
+})
 
 function onVoucherApply(result) {
   appliedVoucher.value = result.voucher
@@ -96,9 +120,10 @@ async function placeOrder() {
       customer_name: customerName.value.trim(),
       customer_phone: customerPhone.value.trim(),
       customer_address: [customerStreet.value.trim(), customerWard.value.trim(), customerDistrict.value.trim(), customerProvince.value.trim()].filter(Boolean).join(', '),
-      shipping_province: customerProvince.value.trim(),
-      shipping_district: customerDistrict.value.trim(),
-      shipping_ward: customerWard.value.trim(),
+      customer_province: customerProvince.value.trim(),
+      customer_district: customerDistrict.value.trim(),
+      customer_ward: customerWard.value.trim(),
+      shipping_fee: shippingFee.value,
       note: shippingNote.value.trim(),
       user_id: authStore.user?.id,
       items: items.value.map((i) => ({
@@ -136,6 +161,9 @@ onMounted(async () => {
       const defaultAddr = addresses.value.find((a) => a.isDefault || a.is_default)
       if (defaultAddr) {
         selectAddress(defaultAddr)
+      }
+      if (customerProvince.value) {
+        calculateShipping()
       }
     } catch {
       // ignore
@@ -367,8 +395,14 @@ onMounted(async () => {
             <div class="flex justify-between">
               <span class="text-gray-500">Phí vận chuyển</span>
               <span :class="shippingFee === 0 ? 'text-emerald-600 font-medium' : 'text-gray-900'">
-                {{ shippingFee === 0 ? 'Miễn phí' : formatPrice(shippingFee) }}
+                <span v-if="loadingShipping" class="text-gray-400">Đang tính...</span>
+                <span v-else-if="shippingFee === 0">Miễn phí</span>
+                <span v-else>{{ formatPrice(shippingFee) }}</span>
               </span>
+            </div>
+            <div v-if="shippingInfo.estimatedDays && !loadingShipping" class="flex justify-between text-xs">
+              <span class="text-gray-400">Thời gian giao</span>
+              <span class="text-gray-500">{{ shippingInfo.estimatedDays }}</span>
             </div>
             <div class="border-t border-gray-100 pt-3 flex justify-between">
               <span class="text-base font-bold text-gray-900">Tổng cộng</span>

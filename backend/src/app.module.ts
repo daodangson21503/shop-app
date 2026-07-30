@@ -17,6 +17,7 @@ import { SettingsModule } from './modules/settings/settings.module';
 import { SlidersModule } from './modules/sliders/sliders.module';
 import { PagesModule } from './modules/pages/pages.module';
 import { AddressesModule } from './modules/addresses/addresses.module';
+import { ShippingModule } from './modules/shipping/shipping.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { AddressesModule } from './modules/addresses/addresses.module';
     SlidersModule,
     PagesModule,
     AddressesModule,
+    ShippingModule,
   ],
 })
 export class AppModule {}
