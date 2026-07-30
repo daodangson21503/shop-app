@@ -254,7 +254,7 @@ onMounted(async () => {
                 <input
                   v-model="customerName"
                   type="text"
-                  placeholder="Nguyễn Văn A"
+                  placeholder="Họ và tên"
                   class="input-field"
                   :class="{ 'input-error': errors.name }"
                 />
@@ -265,7 +265,7 @@ onMounted(async () => {
                 <input
                   v-model="customerPhone"
                   type="tel"
-                  placeholder="0901234567"
+                  placeholder="Số điện thoại"
                   class="input-field"
                   :class="{ 'input-error': errors.phone }"
                 />
@@ -276,15 +276,15 @@ onMounted(async () => {
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label class="label">Tỉnh/Thành phố</label>
-                <input v-model="customerProvince" type="text" class="input-field" placeholder="Hà Nội" />
+                <input v-model="customerProvince" type="text" class="input-field" placeholder="Tỉnh/Thành phố" />
               </div>
               <div>
                 <label class="label">Quận/Huyện</label>
-                <input v-model="customerDistrict" type="text" class="input-field" placeholder="Cầu Giấy" />
+                <input v-model="customerDistrict" type="text" class="input-field" placeholder="Quận/Huyện" />
               </div>
               <div>
                 <label class="label">Phường/Xã</label>
-                <input v-model="customerWard" type="text" class="input-field" placeholder="Dịch Vọng" />
+                <input v-model="customerWard" type="text" class="input-field" placeholder="Phường/Xã" />
               </div>
             </div>
 

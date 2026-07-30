@@ -3,6 +3,8 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../../prisma/prisma.service';
 import { OAuth2Client } from 'google-auth-library';
 import * as bcrypt from 'bcrypt';
+import { createPublicKey, createVerify } from 'crypto';
+import * as googleCerts from './google-certs.json';
 
 @Injectable()
 export class AuthService {
@@ -17,6 +19,38 @@ export class AuthService {
     if (clientId) {
       this.googleClient = new OAuth2Client(clientId);
     }
+  }
+
+  private async verifyGoogleIdTokenLocally(idToken: string): Promise<any> {
+    const parts = idToken.split('.');
+    if (parts.length !== 3) throw new Error('Invalid JWT format');
+
+    const header = JSON.parse(Buffer.from(parts[0], 'base64url').toString());
+    const payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString());
+
+    if (header.alg !== 'RS256') throw new Error('Unsupported algorithm');
+
+    const key = googleCerts.keys.find(k => k.kid === header.kid);
+    if (!key) throw new Error('Matching Google public key not found');
+
+    const publicKey = createPublicKey({ format: 'jwk', key: { kty: key.kty, n: key.n, e: key.e } });
+
+    const verifier = createVerify('RSA-SHA256');
+    verifier.update(parts[0] + '.' + parts[1]);
+    const isValid = verifier.verify(publicKey, Buffer.from(parts[2], 'base64url'));
+
+    if (!isValid) throw new Error('Signature verification failed');
+
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    if (payload.aud !== clientId) throw new Error('Audience mismatch');
+    if (payload.iss !== 'accounts.google.com' && payload.iss !== 'https://accounts.google.com') {
+      throw new Error('Invalid issuer');
+    }
+    if (payload.exp && Date.now() / 1000 > payload.exp) {
+      throw new Error('Token expired');
+    }
+
+    return payload;
   }
 
   private signToken(user: { id: string; role: string; email: string }) {
@@ -58,14 +92,23 @@ export class AuthService {
 
     let payload: any;
     try {
-      const ticket = await this.googleClient.verifyIdToken({
-        idToken: credential,
-        audience: process.env.GOOGLE_CLIENT_ID,
-      });
-      payload = ticket.getPayload();
-    } catch (err) {
-      this.logger.error('Google token verification failed', err);
-      throw new UnauthorizedException('Invalid Google credential');
+      payload = await this.verifyGoogleIdTokenLocally(credential);
+    } catch (localErr) {
+      this.logger.warn('Local verification failed, trying online');
+      try {
+        const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000));
+        const ticket = await Promise.race([
+          this.googleClient.verifyIdToken({
+            idToken: credential,
+            audience: process.env.GOOGLE_CLIENT_ID,
+          }),
+          timeout,
+        ]) as any;
+        payload = ticket.getPayload();
+      } catch (onlineErr) {
+        this.logger.error('Google token verification failed', onlineErr);
+        throw new UnauthorizedException('Invalid Google credential');
+      }
     }
 
     const googleId = payload['sub'];

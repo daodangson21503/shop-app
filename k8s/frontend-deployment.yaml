@@ -4,7 +4,7 @@ metadata:
   name: shop-app-frontend
   namespace: shop-app
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: shop-app-frontend
@@ -25,6 +25,8 @@ spec:
                 secretKeyRef:
                   name: shop-app-secret
                   key: GOOGLE_CLIENT_ID
+            - name: API_PROXY_TARGET
+              value: "http://shop-app-backend:3000"
           livenessProbe:
             httpGet:
               path: /

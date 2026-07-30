@@ -61,7 +61,7 @@ const formattedOriginalPrice = computed(() => {
 
 const productImage = computed(() => {
   if (props.product.images?.length > 0) {
-    return props.product.images[0].imageUrl
+    return props.product.images[0].url || props.product.imageUrl
   }
   return props.product.imageUrl || '/placeholder-product.png'
 })

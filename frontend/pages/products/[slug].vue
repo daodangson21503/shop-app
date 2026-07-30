@@ -79,7 +79,7 @@ const avgRatingPercent = computed(() => {
 
 const productImages = computed(() => {
   if (!product.value) return []
-  if (product.value.images?.length) return product.value.images
+  if (product.value.images?.length) return product.value.images.map(i => i.url || i)
   if (product.value.imageUrl) return [product.value.imageUrl]
   return ['/placeholder-product.png']
 })
