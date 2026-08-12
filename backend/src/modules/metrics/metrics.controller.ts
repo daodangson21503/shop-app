@@ -1,4 +1,4 @@
-import { Controller, Get, Res, UseInterceptors, NestMiddleware } from '@nestjs/common';
+import { Controller, Get, Injectable, Res, UseInterceptors, NestMiddleware } from '@nestjs/common';
 import { Response, Request, NextFunction } from 'express';
 import { MetricsService } from './metrics.service';
 
@@ -13,6 +13,7 @@ export class MetricsController {
   }
 }
 
+@Injectable()
 export class MetricsMiddleware implements NestMiddleware {
   constructor(private metricsService: MetricsService) {}
 
