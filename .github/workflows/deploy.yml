@@ -26,9 +26,9 @@ jobs:
 
       - name: Debug secrets presence
         run: |
-          echo "DOCKER_USERNAME empty? ${{ secrets.DOCKER_USERNAME == '' }}"
-          echo "DOCKER_PASSWORD empty? ${{ secrets.DOCKER_PASSWORD == '' }}"
-          echo "GH_PAT empty? ${{ secrets.GH_PAT == '' }}"
+          if [ -z "${{ secrets.DOCKER_USERNAME }}" ]; then echo "::error::DOCKER_USERNAME is EMPTY"; else echo "::error::DOCKER_USERNAME is SET"; fi
+          if [ -z "${{ secrets.DOCKER_PASSWORD }}" ]; then echo "::error::DOCKER_PASSWORD is EMPTY"; else echo "::error::DOCKER_PASSWORD is SET"; fi
+          if [ -z "${{ secrets.GH_PAT }}" ]; then echo "::error::GH_PAT is EMPTY"; else echo "::error::GH_PAT is SET"; fi
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -55,9 +55,9 @@ jobs:
 
       - name: Debug secrets presence
         run: |
-          echo "DOCKER_USERNAME empty? ${{ secrets.DOCKER_USERNAME == '' }}"
-          echo "DOCKER_PASSWORD empty? ${{ secrets.DOCKER_PASSWORD == '' }}"
-          echo "GH_PAT empty? ${{ secrets.GH_PAT == '' }}"
+          if [ -z "${{ secrets.DOCKER_USERNAME }}" ]; then echo "::error::DOCKER_USERNAME is EMPTY"; else echo "::error::DOCKER_USERNAME is SET"; fi
+          if [ -z "${{ secrets.DOCKER_PASSWORD }}" ]; then echo "::error::DOCKER_PASSWORD is EMPTY"; else echo "::error::DOCKER_PASSWORD is SET"; fi
+          if [ -z "${{ secrets.GH_PAT }}" ]; then echo "::error::GH_PAT is EMPTY"; else echo "::error::GH_PAT is SET"; fi
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
